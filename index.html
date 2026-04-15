@@ -560,6 +560,45 @@
             margin-top: 4px;
         }
 
+        .leads-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .leads-table th {
+            background: var(--primary);
+            color: white;
+            padding: 8px 6px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .leads-table td {
+            padding: 7px 6px;
+            border-bottom: 1px solid var(--gray-medium);
+            color: var(--gray-text);
+            vertical-align: top;
+        }
+
+        .leads-table tr:hover td {
+            background: var(--gray-light);
+        }
+
+        .status-completado {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .status-abandonado {
+            color: var(--error);
+            font-weight: 600;
+        }
+
         .qr-container {
             background: var(--white);
             padding: 12px;
@@ -766,6 +805,24 @@
                     </div>
 
                     <div id="consultoriosList"></div>
+                </div>
+
+                <!-- LEADS REGISTRY -->
+                <div class="admin-section">
+                    <h2>Registro de Leads</h2>
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                        <select id="leadsFilter" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; flex: 1; min-width: 140px;">
+                            <option value="all">Todos los consultorios</option>
+                        </select>
+                        <select id="leadsStatusFilter" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;">
+                            <option value="all">Todos los estados</option>
+                            <option value="completado">Completados</option>
+                            <option value="abandonado">Abandonados</option>
+                        </select>
+                        <button class="btn btn-primary" id="exportLeads" style="font-size: 13px; padding: 8px 16px;">Exportar CSV</button>
+                    </div>
+                    <div id="leadsCount" style="font-size: 12px; color: var(--gray-dark); margin-bottom: 8px;"></div>
+                    <div id="leadsTable" style="overflow-x: auto;"></div>
                 </div>
 
                 <!-- QR GENERATOR -->
@@ -1108,6 +1165,37 @@
             const totalKey = 'inbody_interactions_total';
             const total = parseInt(localStorage.getItem(totalKey) || '0');
             localStorage.setItem(totalKey, total + 1);
+
+            // Crear registro de lead
+            const consultorio = CONFIG.consultorios.find(c => c.id === state.consultorioId);
+            state.currentLeadId = Date.now().toString();
+            const lead = {
+                id: state.currentLeadId,
+                fecha: new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
+                fechaISO: new Date().toISOString(),
+                consultorioId: state.consultorioId,
+                consultorioNombre: consultorio ? consultorio.nombre : state.consultorioId,
+                estado: 'abandonado',
+                nombre: '',
+                telefono: '',
+                fechaNacimiento: '',
+                genero: '',
+                talla: '',
+            };
+            const leads = JSON.parse(localStorage.getItem('inbody_leads') || '[]');
+            leads.unshift(lead);
+            // Mantener máximo 500 registros
+            if (leads.length > 500) leads.length = 500;
+            localStorage.setItem('inbody_leads', JSON.stringify(leads));
+        }
+
+        function updateLead(data) {
+            const leads = JSON.parse(localStorage.getItem('inbody_leads') || '[]');
+            const idx = leads.findIndex(l => l.id === state.currentLeadId);
+            if (idx !== -1) {
+                Object.assign(leads[idx], data);
+                localStorage.setItem('inbody_leads', JSON.stringify(leads));
+            }
         }
 
         function trackCompletion() {
@@ -1118,6 +1206,16 @@
             const totalKey = 'inbody_completed_total';
             const total = parseInt(localStorage.getItem(totalKey) || '0');
             localStorage.setItem(totalKey, total + 1);
+
+            // Marcar lead como completado
+            updateLead({
+                estado: 'completado',
+                nombre: state.formData.nombre,
+                telefono: state.formData.telefono,
+                fechaNacimiento: state.formData.fechaNacimiento,
+                genero: state.formData.genero,
+                talla: state.formData.talla,
+            });
         }
 
         // ============================================
@@ -1202,6 +1300,7 @@
                 if (parsed) {
                     addMessage(trimmed, true);
                     state.formData.nombre = parsed;
+                    updateLead({ nombre: parsed });
                     state.chatState = 'ask_phone';
                     showTyping();
                     setTimeout(() => {
@@ -1221,6 +1320,7 @@
                 if (parsed) {
                     addMessage(trimmed, true);
                     state.formData.telefono = parsed;
+                    updateLead({ telefono: parsed });
                     state.chatState = 'ask_birthdate';
                     showTyping();
                     setTimeout(() => {
@@ -1513,6 +1613,105 @@
             document.getElementById('statsCompleted').textContent = completed;
         }
 
+        function loadLeads() {
+            const leads = JSON.parse(localStorage.getItem('inbody_leads') || '[]');
+            const filterConsultorio = document.getElementById('leadsFilter').value;
+            const filterStatus = document.getElementById('leadsStatusFilter').value;
+
+            // Populate consultorio filter
+            const select = document.getElementById('leadsFilter');
+            const currentVal = select.value;
+            const uniqueConsultorios = [...new Set(leads.map(l => l.consultorioId))];
+            select.innerHTML = '<option value="all">Todos los consultorios</option>';
+            uniqueConsultorios.forEach(id => {
+                const lead = leads.find(l => l.consultorioId === id);
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.textContent = lead ? lead.consultorioNombre : id;
+                select.appendChild(opt);
+            });
+            select.value = currentVal || 'all';
+
+            // Filter
+            let filtered = leads;
+            if (filterConsultorio !== 'all') {
+                filtered = filtered.filter(l => l.consultorioId === filterConsultorio);
+            }
+            if (filterStatus !== 'all') {
+                filtered = filtered.filter(l => l.estado === filterStatus);
+            }
+
+            const countEl = document.getElementById('leadsCount');
+            const completados = filtered.filter(l => l.estado === 'completado').length;
+            countEl.textContent = `${filtered.length} registros (${completados} completados, ${filtered.length - completados} abandonados)`;
+
+            const container = document.getElementById('leadsTable');
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-dark); font-size: 13px; text-align: center; padding: 20px;">Sin registros aún.</p>';
+                return;
+            }
+
+            let html = '<table class="leads-table"><thead><tr>';
+            html += '<th>Fecha</th><th>Consultorio</th><th>Estado</th><th>Nombre</th><th>Teléfono</th><th>F. Nacimiento</th><th>Género</th><th>Talla</th>';
+            html += '</tr></thead><tbody>';
+
+            filtered.forEach(lead => {
+                const statusClass = lead.estado === 'completado' ? 'status-completado' : 'status-abandonado';
+                html += '<tr>';
+                html += `<td style="white-space: nowrap;">${lead.fecha || '-'}</td>`;
+                html += `<td>${lead.consultorioNombre || '-'}</td>`;
+                html += `<td class="${statusClass}">${lead.estado}</td>`;
+                html += `<td>${lead.nombre || '-'}</td>`;
+                html += `<td>${lead.telefono || '-'}</td>`;
+                html += `<td>${lead.fechaNacimiento || '-'}</td>`;
+                html += `<td>${lead.genero || '-'}</td>`;
+                html += `<td>${lead.talla ? lead.talla + ' cm' : '-'}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function exportLeadsCSV() {
+            const leads = JSON.parse(localStorage.getItem('inbody_leads') || '[]');
+            const filterConsultorio = document.getElementById('leadsFilter').value;
+            const filterStatus = document.getElementById('leadsStatusFilter').value;
+
+            let filtered = leads;
+            if (filterConsultorio !== 'all') {
+                filtered = filtered.filter(l => l.consultorioId === filterConsultorio);
+            }
+            if (filterStatus !== 'all') {
+                filtered = filtered.filter(l => l.estado === filterStatus);
+            }
+
+            if (filtered.length === 0) {
+                alert('No hay registros para exportar');
+                return;
+            }
+
+            const headers = ['Fecha', 'Consultorio', 'Estado', 'Nombre', 'Teléfono', 'Fecha Nacimiento', 'Género', 'Talla (cm)'];
+            const rows = filtered.map(l => [
+                l.fecha, l.consultorioNombre, l.estado,
+                l.nombre, l.telefono, l.fechaNacimiento,
+                l.genero, l.talla
+            ]);
+
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.map(cell => `"${(cell || '').replace(/"/g, '""')}"`).join(',') + '\n';
+            });
+
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `leads-inbody-${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
         // ============================================
         // EVENT LISTENERS
         // ============================================
@@ -1563,6 +1762,7 @@
                 document.getElementById('adminContent').classList.remove('hidden');
                 loadConsultorios();
                 updateStats();
+                loadLeads();
             } else {
                 alert('Contraseña incorrecta');
             }
@@ -1575,6 +1775,9 @@
 
         document.getElementById('addConsultorio').addEventListener('click', addConsultorioHandler);
         document.getElementById('generateQr').addEventListener('click', generateQrHandler);
+        document.getElementById('exportLeads').addEventListener('click', exportLeadsCSV);
+        document.getElementById('leadsFilter').addEventListener('change', loadLeads);
+        document.getElementById('leadsStatusFilter').addEventListener('change', loadLeads);
 
         document.getElementById('welcomeYes').addEventListener('click', () => {
             document.getElementById('welcomeModal').classList.add('hidden');
