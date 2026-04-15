@@ -1184,7 +1184,7 @@
         let supabase = null;
 
         const SUPABASE_URL = 'https://pugtkjijndviatlckjf.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_rlo7F4Zn5x-sJUhnSZSznw_XrPcYYZj';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Z3Rramlpam5kdmlhdGxja2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMzUyNTcsImV4cCI6MjA5MTgxMTI1N30.mlqU6OQ-122oQAxaHZW0FKXXlm5Q8IwRlCkEVhPYQF8';
 
         function initSupabase() {
             try {
@@ -1971,6 +1971,35 @@
             }
             localStorage.setItem('inbody_supabase_url', url);
             localStorage.setItem('inbody_supabase_key', key);
+
+            // If library not loaded yet, try loading it now
+            const sb = window.supabase || window.Supabase;
+            if (!sb || !sb.createClient) {
+                const statusEl = document.getElementById('supabaseStatus');
+                statusEl.style.background = '#FFF3E0';
+                statusEl.style.color = '#E65100';
+                statusEl.textContent = 'Cargando librería Supabase...';
+
+                // Try multiple CDNs
+                const cdns = [
+                    'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+                    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js',
+                    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+                ];
+                let loaded = false;
+                for (const cdn of cdns) {
+                    if (loaded) break;
+                    loaded = await new Promise(resolve => {
+                        loadExternalScript(cdn, function(ok) { resolve(ok); });
+                    });
+                }
+                if (!loaded) {
+                    alert('No se pudo cargar la librería de Supabase. Intenta desactivar Brave Shields para esta página (ícono del león en la barra de direcciones) y recarga.');
+                    updateSupabaseStatus(false);
+                    return;
+                }
+            }
+
             const ok = initSupabase();
             if (ok) {
                 const connected = await testSupabaseConnection();
@@ -1981,6 +2010,9 @@
                 } else {
                     alert('No se pudo conectar. Verifica la URL, Key y que la tabla "leads" exista.');
                 }
+            } else {
+                updateSupabaseStatus(false);
+                alert('Error inicializando Supabase. Verifica que la key sea correcta.');
             }
         });
 
@@ -2041,24 +2073,22 @@
                 ]);
             }, 500);
 
-            // Load Supabase library in background (non-blocking)
-            // Try latest version first (supports sb_publishable_ keys), fallback to v2
-            loadExternalScript(
-                'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js',
-                function(ok) {
+            // Load Supabase library in background (non-blocking, multiple CDN fallbacks)
+            function tryLoadSupabase(urls, idx) {
+                if (idx >= urls.length) { console.log('Supabase: no se pudo cargar de ningún CDN'); return; }
+                loadExternalScript(urls[idx], function(ok) {
                     if (ok) {
                         try { initSupabase(); } catch(e) { console.log('Supabase init error:', e.message); }
                     } else {
-                        // Fallback to v2
-                        loadExternalScript(
-                            'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
-                            function(ok2) {
-                                if (ok2) { try { initSupabase(); } catch(e) { console.log('Supabase v2 init error:', e.message); } }
-                            }
-                        );
+                        tryLoadSupabase(urls, idx + 1);
                     }
-                }
-            );
+                });
+            }
+            tryLoadSupabase([
+                'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+                'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+                'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js',
+            ], 0);
 
             // Load QR library in background (only needed for admin panel)
             loadExternalScript(
