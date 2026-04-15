@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InBody - Análisis de Composición Corporal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         :root {
             --primary: #1A6B5A;
@@ -1188,28 +1188,21 @@
         const SUPABASE_KEY = 'sb_publishable_rlo7F4Zn5x-sJUhnSZSznw_XrPcYYZj';
 
         function initSupabase() {
-            if (window.supabase && window.supabase.createClient) {
-                try {
-                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            try {
+                const sb = window.supabase || window.Supabase;
+                if (sb && sb.createClient) {
+                    supabase = sb.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    console.log('Supabase inicializado correctamente');
                     return true;
-                } catch (e) {
-                    console.error('Error inicializando Supabase:', e);
-                    supabase = null;
+                } else {
+                    console.error('Librería Supabase no disponible. window.supabase:', typeof window.supabase);
                     return false;
                 }
+            } catch (e) {
+                console.error('Error inicializando Supabase:', e);
+                supabase = null;
+                return false;
             }
-            // Retry after 2 seconds if library hasn't loaded yet
-            setTimeout(() => {
-                if (!supabase && window.supabase && window.supabase.createClient) {
-                    try {
-                        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                        console.log('Supabase conectado');
-                    } catch (e) {
-                        console.error('Error inicializando Supabase:', e);
-                    }
-                }
-            }, 2000);
-            return false;
         }
 
         async function testSupabaseConnection() {
@@ -1978,14 +1971,14 @@
                 el.style.background = '#E8F5E9';
                 el.style.color = '#2E7D32';
                 el.textContent = 'Conectado a Supabase — los leads se guardan en la nube';
-            } else if (localStorage.getItem('inbody_supabase_url')) {
+            } else if (supabase) {
                 el.style.background = '#FFF3E0';
                 el.style.color = '#E65100';
-                el.textContent = 'Configurado pero sin conexión — usando almacenamiento local';
+                el.textContent = 'Inicializado pero sin conexión a la tabla — revisa que la tabla "leads" exista';
             } else {
-                el.style.background = 'var(--gray-light)';
-                el.style.color = 'var(--gray-dark)';
-                el.textContent = 'Sin configurar — los leads se guardan solo en este navegador';
+                el.style.background = '#FFEBEE';
+                el.style.color = '#C62828';
+                el.textContent = 'Error cargando librería Supabase — los leads se guardan solo en este navegador';
             }
         }
 
