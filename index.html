@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InBody - Análisis de Composición Corporal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" async></script>
     <style>
         :root {
             --primary: #1A6B5A;
@@ -20,13 +20,13 @@
             --success: #388E3C;
             --border: #DDDDDD;
         }
- 
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
- 
+
         html, body {
             height: 100%;
             width: 100%;
@@ -34,12 +34,12 @@
             background: var(--white);
             color: var(--gray-text);
         }
- 
+
         body {
             display: flex;
             flex-direction: column;
         }
- 
+
         /* HEADER */
         .header {
             background: var(--white);
@@ -51,7 +51,7 @@
             position: relative;
             z-index: 100;
         }
- 
+
         .header-title {
             display: flex;
             align-items: center;
@@ -61,7 +61,7 @@
             color: var(--primary);
             flex: 1;
         }
- 
+
         .medical-icon {
             width: 24px;
             height: 24px;
@@ -70,13 +70,13 @@
             justify-content: center;
             color: var(--primary);
         }
- 
+
         .medical-icon::before {
             content: '✚';
             font-size: 20px;
             font-weight: bold;
         }
- 
+
         .admin-button {
             background: none;
             border: none;
@@ -88,11 +88,11 @@
             align-items: center;
             justify-content: center;
         }
- 
+
         .admin-button:hover {
             color: var(--primary);
         }
- 
+
         /* CHAT CONTAINER */
         .chat-container {
             flex: 1;
@@ -101,7 +101,7 @@
             overflow: hidden;
             background: var(--white);
         }
- 
+
         .messages-wrapper {
             flex: 1;
             overflow-y: auto;
@@ -110,27 +110,27 @@
             flex-direction: column;
             gap: 12px;
         }
- 
+
         .messages-wrapper::-webkit-scrollbar {
             width: 6px;
         }
- 
+
         .messages-wrapper::-webkit-scrollbar-track {
             background: var(--gray-light);
         }
- 
+
         .messages-wrapper::-webkit-scrollbar-thumb {
             background: var(--gray-medium);
             border-radius: 3px;
         }
- 
+
         /* MESSAGE BUBBLES */
         .message {
             display: flex;
             gap: 8px;
             animation: slideIn 0.3s ease-out;
         }
- 
+
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -141,15 +141,15 @@
                 transform: translateY(0);
             }
         }
- 
+
         .message.system {
             justify-content: flex-start;
         }
- 
+
         .message.user {
             justify-content: flex-end;
         }
- 
+
         .bubble {
             padding: 12px 16px;
             border-radius: 18px;
@@ -158,30 +158,30 @@
             font-size: 15px;
             line-height: 1.4;
         }
- 
+
         .message.system .bubble {
             background: var(--gray-light);
             color: var(--gray-text);
             border: 1px solid var(--gray-medium);
         }
- 
+
         .message.user .bubble {
             background: var(--primary);
             color: var(--white);
         }
- 
+
         .bubble.error {
             background: #FFEBEE;
             color: var(--error);
             border: 1px solid #FFCDD2;
         }
- 
+
         .bubble.success {
             background: #E8F5E9;
             color: var(--success);
             border: 1px solid #C8E6C9;
         }
- 
+
         /* INFO SECTION */
         .info-section {
             background: var(--gray-light);
@@ -190,19 +190,19 @@
             margin: 12px 0;
             border-left: 4px solid var(--primary);
         }
- 
+
         .info-section h3 {
             color: var(--primary);
             font-size: 16px;
             margin-bottom: 8px;
         }
- 
+
         .info-section p {
             color: var(--gray-text);
             font-size: 14px;
             line-height: 1.6;
         }
- 
+
         /* CONFIRMATION PANEL */
         .confirmation-panel {
             background: var(--gray-light);
@@ -211,13 +211,13 @@
             margin: 12px 0;
             border: 1px solid var(--gray-medium);
         }
- 
+
         .confirmation-panel h3 {
             font-size: 16px;
             color: var(--primary);
             margin-bottom: 12px;
         }
- 
+
         .confirmation-row {
             display: flex;
             justify-content: space-between;
@@ -225,23 +225,23 @@
             border-bottom: 1px solid var(--border);
             font-size: 14px;
         }
- 
+
         .confirmation-row:last-child {
             border-bottom: none;
         }
- 
+
         .confirmation-label {
             color: var(--gray-dark);
             font-weight: 500;
         }
- 
+
         .confirmation-value {
             color: var(--gray-text);
             text-align: right;
             flex: 1;
             margin-left: 16px;
         }
- 
+
         /* BUTTONS */
         .button-group {
             display: flex;
@@ -249,7 +249,7 @@
             margin-top: 8px;
             flex-wrap: wrap;
         }
- 
+
         .btn {
             padding: 10px 16px;
             border: none;
@@ -261,40 +261,40 @@
             flex: 1;
             min-width: 120px;
         }
- 
+
         .btn-primary {
             background: var(--primary);
             color: var(--white);
         }
- 
+
         .btn-primary:hover {
             background: var(--primary-light);
         }
- 
+
         .btn-primary:active {
             background: var(--primary-dark);
         }
- 
+
         .btn-secondary {
             background: var(--gray-medium);
             color: var(--gray-text);
             border: 1px solid var(--border);
         }
- 
+
         .btn-secondary:hover {
             background: var(--gray-light);
         }
- 
+
         .btn-secondary:active {
             background: var(--border);
         }
- 
+
         .btn-small {
             padding: 6px 12px;
             font-size: 13px;
             min-width: 80px;
         }
- 
+
         /* INPUT AREA */
         .input-area {
             border-top: 1px solid var(--border);
@@ -307,7 +307,7 @@
             bottom: 0;
             z-index: 10;
         }
- 
+
         .input-field {
             flex: 1;
             border: 1px solid var(--border);
@@ -318,17 +318,17 @@
             color: var(--gray-text);
             transition: border-color 0.2s;
         }
- 
+
         .input-field:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(26, 107, 90, 0.1);
         }
- 
+
         .input-field::placeholder {
             color: #AAAAAA;
         }
- 
+
         .btn-send {
             padding: 10px 16px;
             background: var(--primary);
@@ -343,22 +343,22 @@
             justify-content: center;
             transition: background 0.2s;
         }
- 
+
         .btn-send:hover {
             background: var(--primary-light);
         }
- 
+
         .btn-send:active {
             background: var(--primary-dark);
         }
- 
+
         /* TYPING INDICATOR */
         .typing-indicator {
             display: flex;
             gap: 4px;
             padding: 12px 16px;
         }
- 
+
         .typing-dot {
             width: 8px;
             height: 8px;
@@ -366,15 +366,15 @@
             background: var(--gray-dark);
             animation: typing 1.4s infinite;
         }
- 
+
         .typing-dot:nth-child(2) {
             animation-delay: 0.2s;
         }
- 
+
         .typing-dot:nth-child(3) {
             animation-delay: 0.4s;
         }
- 
+
         @keyframes typing {
             0%, 60%, 100% {
                 opacity: 0.5;
@@ -385,7 +385,7 @@
                 transform: translateY(-8px);
             }
         }
- 
+
         /* MODAL */
         .modal-overlay {
             display: none;
@@ -399,23 +399,24 @@
             align-items: center;
             justify-content: center;
         }
- 
+
         .modal-overlay.visible {
             display: flex;
         }
- 
+
         .modal {
             background: var(--white);
             border-radius: 12px;
             padding: 24px;
             max-width: 500px;
             width: 90%;
-            max-height: 80vh;
+            max-height: 90vh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             animation: modalIn 0.3s ease-out;
         }
- 
+
         @keyframes modalIn {
             from {
                 opacity: 0;
@@ -426,14 +427,14 @@
                 transform: scale(1);
             }
         }
- 
+
         .modal-header {
             font-size: 20px;
             font-weight: 600;
             color: var(--primary);
             margin-bottom: 16px;
         }
- 
+
         .modal-close {
             position: absolute;
             top: 16px;
@@ -444,16 +445,16 @@
             cursor: pointer;
             color: var(--gray-dark);
         }
- 
+
         .modal-close:hover {
             color: var(--gray-text);
         }
- 
+
         /* ADMIN PANEL */
         .admin-section {
             margin-bottom: 24px;
         }
- 
+
         .admin-section h2 {
             font-size: 18px;
             color: var(--primary);
@@ -461,26 +462,26 @@
             border-bottom: 2px solid var(--gray-medium);
             padding-bottom: 8px;
         }
- 
+
         .admin-form {
             display: flex;
             flex-direction: column;
             gap: 12px;
             margin-bottom: 16px;
         }
- 
+
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
- 
+
         .form-group label {
             font-size: 13px;
             font-weight: 500;
             color: var(--gray-dark);
         }
- 
+
         .form-group input {
             padding: 10px 12px;
             border: 1px solid var(--border);
@@ -488,13 +489,13 @@
             font-size: 14px;
             font-family: inherit;
         }
- 
+
         .form-group input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(26, 107, 90, 0.1);
         }
- 
+
         .consultorio-item {
             background: var(--gray-light);
             padding: 12px;
@@ -505,42 +506,42 @@
             align-items: center;
             gap: 8px;
         }
- 
+
         .consultorio-info {
             flex: 1;
             font-size: 14px;
         }
- 
+
         .consultorio-info .name {
             font-weight: 600;
             color: var(--gray-text);
         }
- 
+
         .consultorio-info .meta {
             font-size: 12px;
             color: var(--gray-dark);
             margin-top: 4px;
         }
- 
+
         .consultorio-actions {
             display: flex;
             gap: 6px;
         }
- 
+
         .btn-icon {
             padding: 6px 10px;
             font-size: 12px;
             flex: 0;
             min-width: auto;
         }
- 
+
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 16px;
         }
- 
+
         .stat-card {
             background: var(--gray-light);
             padding: 12px;
@@ -548,25 +549,25 @@
             text-align: center;
             border: 1px solid var(--gray-medium);
         }
- 
+
         .stat-number {
             font-size: 24px;
             font-weight: 700;
             color: var(--primary);
         }
- 
+
         .stat-label {
             font-size: 12px;
             color: var(--gray-dark);
             margin-top: 4px;
         }
- 
+
         .leads-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 12px;
         }
- 
+
         .leads-table th {
             background: var(--primary);
             color: white;
@@ -578,28 +579,28 @@
             letter-spacing: 0.3px;
             white-space: nowrap;
         }
- 
+
         .leads-table td {
             padding: 7px 6px;
             border-bottom: 1px solid var(--gray-medium);
             color: var(--gray-text);
             vertical-align: top;
         }
- 
+
         .leads-table tr:hover td {
             background: var(--gray-light);
         }
- 
+
         .status-completado {
             color: var(--success);
             font-weight: 600;
         }
- 
+
         .status-abandonado {
             color: var(--error);
             font-weight: 600;
         }
- 
+
         .qr-container {
             background: var(--white);
             padding: 12px;
@@ -607,14 +608,14 @@
             display: inline-block;
             border: 1px solid var(--border);
         }
- 
+
         .qr-label {
             font-size: 12px;
             color: var(--gray-dark);
             margin-bottom: 8px;
             text-align: center;
         }
- 
+
         /* WELCOME MODAL */
         .welcome-modal {
             position: fixed;
@@ -628,11 +629,11 @@
             justify-content: center;
             z-index: 2000;
         }
- 
+
         .welcome-modal.hidden {
             display: none;
         }
- 
+
         .welcome-content {
             background: var(--white);
             border-radius: 16px;
@@ -642,65 +643,65 @@
             text-align: center;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
- 
+
         .welcome-icon {
             font-size: 48px;
             margin-bottom: 16px;
         }
- 
+
         .welcome-title {
             font-size: 24px;
             font-weight: 600;
             color: var(--primary);
             margin-bottom: 12px;
         }
- 
+
         .welcome-subtitle {
             font-size: 14px;
             color: var(--gray-dark);
             margin-bottom: 24px;
             line-height: 1.6;
         }
- 
+
         .welcome-buttons {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
- 
+
         @media (max-width: 600px) {
             .modal {
                 width: 95%;
                 max-height: 90vh;
             }
- 
+
             .welcome-content {
                 width: 95%;
                 padding: 24px;
             }
- 
+
             .button-group {
                 flex-direction: column;
             }
- 
+
             .btn {
                 min-width: auto;
             }
- 
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
- 
+
             .bubble {
                 max-width: 95%;
             }
         }
- 
+
         /* HIDE ELEMENTS */
         .hidden {
             display: none !important;
         }
- 
+
         .invisible {
             visibility: hidden;
         }
@@ -715,7 +716,7 @@
         </div>
         <button class="admin-button" id="adminTrigger" title="Panel de administración">⚙️</button>
     </div>
- 
+
     <!-- CHAT CONTAINER -->
     <div class="chat-container">
         <div class="messages-wrapper" id="messagesWrapper"></div>
@@ -730,7 +731,7 @@
             <button class="btn-send" id="sendButton">Enviar</button>
         </div>
     </div>
- 
+
     <!-- WELCOME MODAL -->
     <div class="welcome-modal" id="welcomeModal">
         <div class="welcome-content">
@@ -743,13 +744,13 @@
             </div>
         </div>
     </div>
- 
+
     <!-- ADMIN MODAL -->
     <div class="modal-overlay" id="adminModal">
         <div class="modal">
             <button class="modal-close" id="adminClose">✕</button>
             <div class="modal-header">Panel de Administración</div>
- 
+
             <!-- PASSWORD ENTRY -->
             <div id="adminPassword" class="admin-section">
                 <div class="admin-form">
@@ -760,7 +761,7 @@
                     <button class="btn btn-primary" id="adminLogin">Ingresar</button>
                 </div>
             </div>
- 
+
             <!-- ADMIN CONTENT (Hidden until login) -->
             <div id="adminContent" class="hidden">
                 <!-- STATS -->
@@ -777,7 +778,7 @@
                         </div>
                     </div>
                 </div>
- 
+
                 <!-- CONSULTORIOS -->
                 <div class="admin-section">
                     <h2>Gestionar Consultorios</h2>
@@ -804,10 +805,10 @@
                         </div>
                         <button class="btn btn-primary" id="addConsultorio">Agregar Consultorio</button>
                     </div>
- 
+
                     <div id="consultoriosList"></div>
                 </div>
- 
+
                 <!-- LEADS REGISTRY -->
                 <div class="admin-section">
                     <h2>Registro de Leads</h2>
@@ -825,7 +826,7 @@
                     <div id="leadsCount" style="font-size: 12px; color: var(--gray-dark); margin-bottom: 8px;"></div>
                     <div id="leadsTable" style="overflow-x: auto;"></div>
                 </div>
- 
+
                 <!-- QR GENERATOR -->
                 <div class="admin-section">
                     <h2>Generar Códigos QR</h2>
@@ -840,7 +841,7 @@
                     </div>
                     <div id="qrOutput"></div>
                 </div>
- 
+
                 <!-- SUPABASE CONFIG -->
                 <div class="admin-section">
                     <h2>Conexión a Base de Datos</h2>
@@ -859,17 +860,17 @@
                         <button class="btn btn-primary" id="saveSupabase">Guardar y Conectar</button>
                     </div>
                 </div>
- 
+
                 <button class="btn btn-secondary" style="width: 100%; margin-top: 20px;" id="adminLogout">Cerrar sesión</button>
             </div>
         </div>
     </div>
- 
+
     <script>
         // ============================================
         // CONFIGURATION & STATE
         // ============================================
- 
+
         const CONFIG = {
             password: 'inbody2024',
             colors: {
@@ -928,7 +929,7 @@
                 },
             },
         };
- 
+
         // STATE
         let state = {
             screen: 'welcome', // welcome, chat, info
@@ -944,11 +945,11 @@
             adminLoggedIn: false,
             typingActive: false,
         };
- 
+
         // ============================================
         // DATA PARSING / VALIDATION
         // ============================================
- 
+
         function parsePhone(input) {
             const digits = input.replace(/\D/g, '');
             if (digits.length === 10 && /^\d{10}$/.test(digits)) {
@@ -956,7 +957,7 @@
             }
             return null;
         }
- 
+
         function parseName(input) {
             const trimmed = input.trim();
             const words = trimmed.split(/\s+/).filter(w => w.length > 0);
@@ -965,10 +966,10 @@
             }
             return null;
         }
- 
+
         function parseBirthdate(input) {
             const cleaned = input.trim();
- 
+
             // Try dd/mm/yyyy or dd-mm-yyyy
             let match = cleaned.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
             if (match) {
@@ -986,14 +987,14 @@
                     }
                 }
             }
- 
+
             return null;
         }
- 
+
         function parseHeight(input) {
             const cleaned = input.toLowerCase().replace(/\s*cm?\s*$/, '').trim();
             const num = parseFloat(cleaned.replace(',', '.'));
- 
+
             if (!isNaN(num)) {
                 let height = num;
                 if (num < 3) {
@@ -1003,69 +1004,69 @@
                     return Math.round(height);
                 }
             }
- 
+
             return null;
         }
- 
+
         function parseGender(input) {
             const normalized = input.toLowerCase().trim();
             const masc = ['masculino', 'hombre', 'm', 'h', 'masc'];
             const fem = ['femenino', 'mujer', 'f', 'fem'];
- 
+
             if (masc.includes(normalized)) return 'Masculino';
             if (fem.includes(normalized)) return 'Femenino';
- 
+
             return null;
         }
- 
+
         // ============================================
         // DOM UTILITIES
         // ============================================
- 
+
         function getParam(name) {
             const params = new URLSearchParams(window.location.search);
             return params.get(name);
         }
- 
+
         function addMessage(text, isUser = false, isError = false, isSuccess = false) {
             const wrapper = document.getElementById('messagesWrapper');
             const msg = document.createElement('div');
             msg.className = `message ${isUser ? 'user' : 'system'}`;
- 
+
             const bubble = document.createElement('div');
             bubble.className = 'bubble';
             if (isError) bubble.classList.add('error');
             if (isSuccess) bubble.classList.add('success');
- 
+
             bubble.textContent = text;
             msg.appendChild(bubble);
             wrapper.appendChild(msg);
- 
+
             wrapper.scrollTop = wrapper.scrollHeight;
         }
- 
+
         function addInfoBubble(title, content) {
             const wrapper = document.getElementById('messagesWrapper');
             const msg = document.createElement('div');
             msg.className = 'message system';
- 
+
             const section = document.createElement('div');
             section.className = 'info-section';
             section.innerHTML = `<h3>${title}</h3><p>${content}</p>`;
- 
+
             msg.appendChild(section);
             wrapper.appendChild(msg);
- 
+
             wrapper.scrollTop = wrapper.scrollHeight;
         }
- 
+
         function showTyping() {
             state.typingActive = true;
             const wrapper = document.getElementById('messagesWrapper');
             const msg = document.createElement('div');
             msg.className = 'message system';
             msg.id = 'typingIndicator';
- 
+
             const indicator = document.createElement('div');
             indicator.className = 'typing-indicator';
             for (let i = 0; i < 3; i++) {
@@ -1073,31 +1074,31 @@
                 dot.className = 'typing-dot';
                 indicator.appendChild(dot);
             }
- 
+
             msg.appendChild(indicator);
             wrapper.appendChild(msg);
             wrapper.scrollTop = wrapper.scrollHeight;
         }
- 
+
         function removeTyping() {
             state.typingActive = false;
             const el = document.getElementById('typingIndicator');
             if (el) el.remove();
         }
- 
+
         function clearInput() {
             document.getElementById('userInput').value = '';
         }
- 
+
         function showQuickReplies(buttons) {
             const wrapper = document.getElementById('messagesWrapper');
             const msg = document.createElement('div');
             msg.className = 'message system';
- 
+
             const group = document.createElement('div');
             group.className = 'button-group';
             group.style.marginTop = '8px';
- 
+
             buttons.forEach(btn => {
                 const b = document.createElement('button');
                 b.className = 'btn btn-secondary btn-small';
@@ -1109,17 +1110,17 @@
                 };
                 group.appendChild(b);
             });
- 
+
             msg.appendChild(group);
             wrapper.appendChild(msg);
             wrapper.scrollTop = wrapper.scrollHeight;
         }
- 
+
         function showConfirmation() {
             const wrapper = document.getElementById('messagesWrapper');
             const msg = document.createElement('div');
             msg.className = 'message system';
- 
+
             const panel = document.createElement('div');
             panel.className = 'confirmation-panel';
             panel.innerHTML = `
@@ -1149,18 +1150,18 @@
                     <button class="btn btn-secondary" onclick="handleConfirmEdit()">Editar datos</button>
                 </div>
             `;
- 
+
             msg.appendChild(panel);
             wrapper.appendChild(msg);
             wrapper.scrollTop = wrapper.scrollHeight;
         }
- 
+
         function handleConfirmYes() {
             addMessage('Sí, correcto', true);
             state.chatState = 'send_whatsapp';
             setTimeout(() => sendToWhatsApp(), 800);
         }
- 
+
         function handleConfirmEdit() {
             addMessage('Editar datos', true);
             addMessage(CONFIG.messages.editField);
@@ -1172,21 +1173,21 @@
                 { label: 'Talla', value: 'edit_talla' },
             ]);
         }
- 
+
         // ============================================
         // ANALYTICS
         // ============================================
- 
+
         // ============================================
         // SUPABASE CONNECTION
         // ============================================
- 
+
         let supabase = null;
- 
+
         function initSupabase() {
             const url = localStorage.getItem('inbody_supabase_url');
             const key = localStorage.getItem('inbody_supabase_key');
-            if (url && key) {
+            if (url && key && window.supabase && window.supabase.createClient) {
                 try {
                     supabase = window.supabase.createClient(url, key);
                     return true;
@@ -1198,7 +1199,7 @@
             }
             return false;
         }
- 
+
         async function testSupabaseConnection() {
             if (!supabase) return false;
             try {
@@ -1208,24 +1209,24 @@
                 return false;
             }
         }
- 
+
         // ============================================
         // LEAD TRACKING (Supabase + localStorage fallback)
         // ============================================
- 
+
         async function trackInteraction() {
             const key = `inbody_interactions_${state.consultorioId}`;
             const current = parseInt(localStorage.getItem(key) || '0');
             localStorage.setItem(key, current + 1);
- 
+
             const totalKey = 'inbody_interactions_total';
             const total = parseInt(localStorage.getItem(totalKey) || '0');
             localStorage.setItem(totalKey, total + 1);
- 
+
             const consultorio = CONFIG.consultorios.find(c => c.id === state.consultorioId);
             const sessionId = Date.now().toString();
             state.currentLeadId = sessionId;
- 
+
             const lead = {
                 id: sessionId,
                 fecha: new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
@@ -1239,13 +1240,13 @@
                 genero: '',
                 talla: '',
             };
- 
+
             // localStorage fallback
             const leads = JSON.parse(localStorage.getItem('inbody_leads') || '[]');
             leads.unshift(lead);
             if (leads.length > 500) leads.length = 500;
             localStorage.setItem('inbody_leads', JSON.stringify(leads));
- 
+
             // Supabase insert
             if (supabase) {
                 try {
@@ -1261,7 +1262,7 @@
                 }
             }
         }
- 
+
         async function updateLead(data) {
             // localStorage update
             const leads = JSON.parse(localStorage.getItem('inbody_leads') || '[]');
@@ -1270,7 +1271,7 @@
                 Object.assign(leads[idx], data);
                 localStorage.setItem('inbody_leads', JSON.stringify(leads));
             }
- 
+
             // Supabase update
             if (supabase && state.currentLeadId) {
                 try {
@@ -1281,7 +1282,7 @@
                     if (data.genero) supaData.genero = data.genero;
                     if (data.talla) supaData.talla = data.talla;
                     if (data.estado) supaData.estado = data.estado;
- 
+
                     await supabase
                         .from('leads')
                         .update(supaData)
@@ -1291,16 +1292,16 @@
                 }
             }
         }
- 
+
         async function trackCompletion() {
             const key = `inbody_completed_${state.consultorioId}`;
             const current = parseInt(localStorage.getItem(key) || '0');
             localStorage.setItem(key, current + 1);
- 
+
             const totalKey = 'inbody_completed_total';
             const total = parseInt(localStorage.getItem(totalKey) || '0');
             localStorage.setItem(totalKey, total + 1);
- 
+
             // Marcar lead como completado con todos los datos
             await updateLead({
                 estado: 'completado',
@@ -1311,15 +1312,15 @@
                 talla: state.formData.talla,
             });
         }
- 
+
         // ============================================
         // CHAT FLOW
         // ============================================
- 
+
         function handleUserInput(input) {
             const trimmed = input.trim();
             trackInteraction();
- 
+
             if (state.chatState === 'welcome') {
                 if (trimmed.toLowerCase().includes('sí') || trimmed.toLowerCase().includes('agendar')) {
                     state.chatState = 'ask_name';
@@ -1349,7 +1350,7 @@
                 }
                 return;
             }
- 
+
             if (state.chatState === 'info_menu') {
                 const lower = trimmed.toLowerCase();
                 if (lower.includes('qué') || lower.includes('what')) {
@@ -1373,7 +1374,7 @@
                     }, 800);
                     return;
                 }
- 
+
                 setTimeout(() => {
                     showTyping();
                     setTimeout(() => {
@@ -1387,7 +1388,7 @@
                 }, 500);
                 return;
             }
- 
+
             // NAME
             if (state.chatState === 'ask_name') {
                 const parsed = parseName(trimmed);
@@ -1407,7 +1408,7 @@
                 }
                 return;
             }
- 
+
             // PHONE
             if (state.chatState === 'ask_phone') {
                 const parsed = parsePhone(trimmed);
@@ -1427,7 +1428,7 @@
                 }
                 return;
             }
- 
+
             // BIRTHDATE
             if (state.chatState === 'ask_birthdate') {
                 const parsed = parseBirthdate(trimmed);
@@ -1450,7 +1451,7 @@
                 }
                 return;
             }
- 
+
             // GENDER
             if (state.chatState === 'ask_gender') {
                 const parsed = parseGender(trimmed);
@@ -1469,7 +1470,7 @@
                 }
                 return;
             }
- 
+
             // HEIGHT
             if (state.chatState === 'ask_height') {
                 const parsed = parseHeight(trimmed);
@@ -1488,7 +1489,7 @@
                 }
                 return;
             }
- 
+
             // EDIT FIELDS
             if (state.chatState === 'confirm' && state.formData.nombre) {
                 if (trimmed.toLowerCase().includes('nombre')) {
@@ -1518,10 +1519,10 @@
                 }
             }
         }
- 
+
         function sendToWhatsApp() {
             const consultorio = CONFIG.consultorios.find(c => c.id === state.consultorioId);
- 
+
             let message = `Nueva cita InBody\n\n`;
             message += `Nombre: ${state.formData.nombre}\n`;
             message += `Teléfono: ${state.formData.telefono}\n`;
@@ -1531,24 +1532,24 @@
             if (consultorio) {
                 message += `Consultorio de origen: ${consultorio.nombre}`;
             }
- 
+
             const encoded = encodeURIComponent(message);
             const whatsappNumber = consultorio ? consultorio.whatsapp : '523312345678';
             const url = `https://wa.me/${whatsappNumber}?text=${encoded}`;
- 
+
             addMessage(CONFIG.messages.success, false, false, true);
             trackCompletion();
             state.chatState = 'done';
- 
+
             setTimeout(() => {
                 window.open(url, '_blank');
             }, 1000);
         }
- 
+
         // ============================================
         // ADMIN PANEL
         // ============================================
- 
+
         function loadConsultorios() {
             const stored = localStorage.getItem('inbody_consultorios');
             if (stored) {
@@ -1557,11 +1558,11 @@
             renderConsultorios();
             updateQrSelect();
         }
- 
+
         function renderConsultorios() {
             const list = document.getElementById('consultoriosList');
             list.innerHTML = '';
- 
+
             CONFIG.consultorios.forEach(c => {
                 const item = document.createElement('div');
                 item.className = 'consultorio-item';
@@ -1577,37 +1578,37 @@
                 list.appendChild(item);
             });
         }
- 
+
         function addConsultorioHandler() {
             const id = document.getElementById('consultorioId').value.trim();
             const nombre = document.getElementById('consultorioName').value.trim();
             const doctor = document.getElementById('consultorioDoctor').value.trim();
             const whatsapp = document.getElementById('consultorioWhatsapp').value.trim();
             const direccion = document.getElementById('consultorioAddress').value.trim();
- 
+
             if (!id || !nombre || !doctor || !whatsapp || !direccion) {
                 alert('Complete todos los campos');
                 return;
             }
- 
+
             const exists = CONFIG.consultorios.findIndex(c => c.id === id);
             if (exists >= 0) {
                 CONFIG.consultorios[exists] = { id, nombre, doctor, whatsapp, direccion };
             } else {
                 CONFIG.consultorios.push({ id, nombre, doctor, whatsapp, direccion });
             }
- 
+
             localStorage.setItem('inbody_consultorios', JSON.stringify(CONFIG.consultorios));
             renderConsultorios();
             updateQrSelect();
- 
+
             document.getElementById('consultorioId').value = '';
             document.getElementById('consultorioName').value = '';
             document.getElementById('consultorioDoctor').value = '';
             document.getElementById('consultorioWhatsapp').value = '';
             document.getElementById('consultorioAddress').value = '';
         }
- 
+
         function deleteConsultorio(id) {
             if (confirm('¿Eliminar este consultorio?')) {
                 CONFIG.consultorios = CONFIG.consultorios.filter(c => c.id !== id);
@@ -1616,7 +1617,7 @@
                 updateQrSelect();
             }
         }
- 
+
         function updateQrSelect() {
             const select = document.getElementById('qrConsultorio');
             select.innerHTML = '<option value="">-- Seleccionar --</option>';
@@ -1627,43 +1628,43 @@
                 select.appendChild(opt);
             });
         }
- 
+
         function generateQrHandler() {
             const consultorioId = document.getElementById('qrConsultorio').value;
             if (!consultorioId) {
                 alert('Seleccione un consultorio');
                 return;
             }
- 
+
             const baseUrl = window.location.origin + window.location.pathname;
             const qrUrl = `${baseUrl}?c=${consultorioId}`;
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}`;
             const consultorioNombre = CONFIG.consultorios.find(c => c.id === consultorioId).nombre;
- 
+
             const output = document.getElementById('qrOutput');
             output.innerHTML = '';
- 
+
             const container = document.createElement('div');
             container.style.marginTop = '16px';
             container.style.textAlign = 'center';
- 
+
             const label = document.createElement('div');
             label.className = 'qr-label';
             label.textContent = `QR para: ${consultorioNombre}`;
- 
+
             const qrImg = document.createElement('img');
             qrImg.src = qrApiUrl;
             qrImg.alt = `QR ${consultorioNombre}`;
             qrImg.style.cssText = 'max-width: 250px; margin: 16px auto; display: block; border: 8px solid white; border-radius: 8px;';
- 
+
             const urlLabel = document.createElement('div');
             urlLabel.style.cssText = 'font-size: 11px; color: #999; word-break: break-all; margin-top: 8px;';
             urlLabel.textContent = qrUrl;
- 
+
             container.appendChild(label);
             container.appendChild(qrImg);
             container.appendChild(urlLabel);
- 
+
             const printBtn = document.createElement('button');
             printBtn.className = 'btn btn-primary';
             printBtn.textContent = 'Imprimir QR';
@@ -1695,21 +1696,21 @@
                 printWindow.document.close();
                 setTimeout(() => printWindow.print(), 500);
             };
- 
+
             container.appendChild(printBtn);
             output.appendChild(container);
         }
- 
+
         function updateStats() {
             const total = parseInt(localStorage.getItem('inbody_interactions_total') || '0');
             const completed = parseInt(localStorage.getItem('inbody_completed_total') || '0');
             document.getElementById('statsTotal').textContent = total;
             document.getElementById('statsCompleted').textContent = completed;
         }
- 
+
         async function loadLeads() {
             let leads = [];
- 
+
             // Try Supabase first, fall back to localStorage
             if (supabase) {
                 try {
@@ -1718,7 +1719,7 @@
                         .select('*')
                         .order('created_at', { ascending: false })
                         .limit(500);
- 
+
                     if (!error && data) {
                         leads = data.map(row => ({
                             id: row.session_id || row.id,
@@ -1743,7 +1744,7 @@
             }
             const filterConsultorio = document.getElementById('leadsFilter').value;
             const filterStatus = document.getElementById('leadsStatusFilter').value;
- 
+
             // Populate consultorio filter
             const select = document.getElementById('leadsFilter');
             const currentVal = select.value;
@@ -1757,7 +1758,7 @@
                 select.appendChild(opt);
             });
             select.value = currentVal || 'all';
- 
+
             // Filter
             let filtered = leads;
             if (filterConsultorio !== 'all') {
@@ -1766,21 +1767,21 @@
             if (filterStatus !== 'all') {
                 filtered = filtered.filter(l => l.estado === filterStatus);
             }
- 
+
             const countEl = document.getElementById('leadsCount');
             const completados = filtered.filter(l => l.estado === 'completado').length;
             countEl.textContent = `${filtered.length} registros (${completados} completados, ${filtered.length - completados} abandonados)`;
- 
+
             const container = document.getElementById('leadsTable');
             if (filtered.length === 0) {
                 container.innerHTML = '<p style="color: var(--gray-dark); font-size: 13px; text-align: center; padding: 20px;">Sin registros aún.</p>';
                 return;
             }
- 
+
             let html = '<table class="leads-table"><thead><tr>';
             html += '<th>Fecha</th><th>Consultorio</th><th>Estado</th><th>Nombre</th><th>Teléfono</th><th>F. Nacimiento</th><th>Género</th><th>Talla</th>';
             html += '</tr></thead><tbody>';
- 
+
             filtered.forEach(lead => {
                 const statusClass = lead.estado === 'completado' ? 'status-completado' : 'status-abandonado';
                 html += '<tr>';
@@ -1794,14 +1795,14 @@
                 html += `<td>${lead.talla ? lead.talla + ' cm' : '-'}</td>`;
                 html += '</tr>';
             });
- 
+
             html += '</tbody></table>';
             container.innerHTML = html;
         }
- 
+
         async function exportLeadsCSV() {
             let leads = [];
- 
+
             if (supabase) {
                 try {
                     const { data, error } = await supabase
@@ -1823,13 +1824,13 @@
                     }
                 } catch (e) { /* fall through */ }
             }
- 
+
             if (leads.length === 0) {
                 leads = JSON.parse(localStorage.getItem('inbody_leads') || '[]');
             }
             const filterConsultorio = document.getElementById('leadsFilter').value;
             const filterStatus = document.getElementById('leadsStatusFilter').value;
- 
+
             let filtered = leads;
             if (filterConsultorio !== 'all') {
                 filtered = filtered.filter(l => l.consultorioId === filterConsultorio);
@@ -1837,24 +1838,24 @@
             if (filterStatus !== 'all') {
                 filtered = filtered.filter(l => l.estado === filterStatus);
             }
- 
+
             if (filtered.length === 0) {
                 alert('No hay registros para exportar');
                 return;
             }
- 
+
             const headers = ['Fecha', 'Consultorio', 'Estado', 'Nombre', 'Teléfono', 'Fecha Nacimiento', 'Género', 'Talla (cm)'];
             const rows = filtered.map(l => [
                 l.fecha, l.consultorioNombre, l.estado,
                 l.nombre, l.telefono, l.fechaNacimiento,
                 l.genero, l.talla
             ]);
- 
+
             let csv = headers.join(',') + '\n';
             rows.forEach(row => {
                 csv += row.map(cell => `"${(cell || '').replace(/"/g, '""')}"`).join(',') + '\n';
             });
- 
+
             const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -1863,11 +1864,11 @@
             link.click();
             URL.revokeObjectURL(url);
         }
- 
+
         // ============================================
         // EVENT LISTENERS
         // ============================================
- 
+
         document.getElementById('sendButton').addEventListener('click', () => {
             const input = document.getElementById('userInput').value;
             if (input.trim()) {
@@ -1875,20 +1876,20 @@
                 handleUserInput(input);
             }
         });
- 
+
         document.getElementById('userInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 document.getElementById('sendButton').click();
             }
         });
- 
+
         let adminTapCount = 0;
         let adminTapTimer = null;
- 
+
         document.getElementById('adminTrigger').addEventListener('click', () => {
             adminTapCount++;
             clearTimeout(adminTapTimer);
- 
+
             if (adminTapCount === 1) {
                 adminTapTimer = setTimeout(() => {
                     adminTapCount = 0;
@@ -1900,12 +1901,12 @@
                 }, 300);
             }
         });
- 
+
         document.getElementById('adminClose').addEventListener('click', () => {
             document.getElementById('adminModal').classList.remove('visible');
             state.adminLoggedIn = false;
         });
- 
+
         document.getElementById('adminLogin').addEventListener('click', () => {
             const pwd = document.getElementById('adminPasswordInput').value;
             if (pwd === CONFIG.password) {
@@ -1925,18 +1926,18 @@
                 alert('Contraseña incorrecta');
             }
         });
- 
+
         document.getElementById('adminLogout').addEventListener('click', () => {
             state.adminLoggedIn = false;
             document.getElementById('adminModal').classList.remove('visible');
         });
- 
+
         document.getElementById('addConsultorio').addEventListener('click', addConsultorioHandler);
         document.getElementById('generateQr').addEventListener('click', generateQrHandler);
         document.getElementById('exportLeads').addEventListener('click', exportLeadsCSV);
         document.getElementById('leadsFilter').addEventListener('change', loadLeads);
         document.getElementById('leadsStatusFilter').addEventListener('change', loadLeads);
- 
+
         document.getElementById('saveSupabase').addEventListener('click', async () => {
             const url = document.getElementById('supabaseUrl').value.trim();
             const key = document.getElementById('supabaseKey').value.trim();
@@ -1958,7 +1959,7 @@
                 }
             }
         });
- 
+
         function updateSupabaseStatus(connected) {
             const el = document.getElementById('supabaseStatus');
             if (connected) {
@@ -1975,7 +1976,7 @@
                 el.textContent = 'Sin configurar — los leads se guardan solo en este navegador';
             }
         }
- 
+
         document.getElementById('welcomeYes').addEventListener('click', () => {
             document.getElementById('welcomeModal').classList.add('hidden');
             state.chatState = 'ask_name';
@@ -1984,7 +1985,7 @@
                 addMessage(CONFIG.messages.askName);
             }, 800);
         });
- 
+
         document.getElementById('welcomeInfo').addEventListener('click', () => {
             document.getElementById('welcomeModal').classList.add('hidden');
             state.chatState = 'info_menu';
@@ -1999,15 +2000,15 @@
                 { label: 'Quiero agendar', value: 'want_schedule' },
             ]);
         });
- 
+
         // ============================================
         // INITIALIZATION
         // ============================================
- 
+
         window.addEventListener('load', () => {
             state.consultorioId = getParam('c') || 'centro';
             initSupabase();
- 
+
             // Initial message
             setTimeout(() => {
                 addMessage(CONFIG.messages.welcome);
@@ -2020,4 +2021,3 @@
     </script>
 </body>
 </html>
- 
