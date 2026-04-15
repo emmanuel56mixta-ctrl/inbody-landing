@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InBody - Análisis de Composición Corporal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer onerror="console.log('Supabase CDN no disponible, usando localStorage')"></script>
     <style>
         :root {
             --primary: #1A6B5A;
@@ -2012,7 +2012,8 @@
 
         window.addEventListener('load', () => {
             state.consultorioId = getParam('c') || 'centro';
-            initSupabase();
+            // Intentar conectar Supabase después de que cargue todo
+            setTimeout(() => { initSupabase(); }, 1500);
 
             // Initial message
             setTimeout(() => {
