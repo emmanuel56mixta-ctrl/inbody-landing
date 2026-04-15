@@ -1184,12 +1184,13 @@
 
         let supabase = null;
 
+        const SUPABASE_URL = 'https://pugtkjijndviatlckjf.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_rlo7F4Zn5x-sJUhnSZSznw_XrPcYYZj';
+
         function initSupabase() {
-            const url = localStorage.getItem('inbody_supabase_url');
-            const key = localStorage.getItem('inbody_supabase_key');
-            if (url && key && window.supabase && window.supabase.createClient) {
+            if (window.supabase && window.supabase.createClient) {
                 try {
-                    supabase = window.supabase.createClient(url, key);
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     return true;
                 } catch (e) {
                     console.error('Error inicializando Supabase:', e);
@@ -1197,6 +1198,17 @@
                     return false;
                 }
             }
+            // Retry after 2 seconds if library hasn't loaded yet
+            setTimeout(() => {
+                if (!supabase && window.supabase && window.supabase.createClient) {
+                    try {
+                        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                        console.log('Supabase conectado');
+                    } catch (e) {
+                        console.error('Error inicializando Supabase:', e);
+                    }
+                }
+            }, 2000);
             return false;
         }
 
