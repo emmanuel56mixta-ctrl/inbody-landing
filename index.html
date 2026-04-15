@@ -1178,57 +1178,93 @@
         // ============================================
 
         // ============================================
-        // SUPABASE CONNECTION
+        // SUPABASE CONNECTION (direct REST API, no external library needed)
         // ============================================
-
-        let supabase = null;
 
         const SUPABASE_URL = 'https://pugtkjijndviatlckjf.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Z3Rramlpam5kdmlhdGxja2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMzUyNTcsImV4cCI6MjA5MTgxMTI1N30.mlqU6OQ-122oQAxaHZW0FKXXlm5Q8IwRlCkEVhPYQF8';
 
-        function initSupabase() {
-            try {
-                const sb = window.supabase || window.Supabase;
-                if (!sb || !sb.createClient) {
-                    console.log('Librería Supabase no disponible aún');
-                    return false;
-                }
-                // Use hardcoded key, or override from localStorage if user saved a different one
-                const customUrl = localStorage.getItem('inbody_supabase_url');
-                const customKey = localStorage.getItem('inbody_supabase_key');
-                const finalUrl = (customUrl && customUrl.length > 10) ? customUrl : SUPABASE_URL;
-                const finalKey = (customKey && customKey.length > 10) ? customKey : SUPABASE_KEY;
+        let supabaseReady = false;
 
-                supabase = sb.createClient(finalUrl, finalKey);
-                console.log('Supabase inicializado correctamente con key tipo:', finalKey.substring(0, 6) + '...');
-                return true;
-            } catch (e) {
-                console.log('Supabase createClient error:', e.message);
-                supabase = null;
-                return false;
-            }
+        function getSupabaseConfig() {
+            const customUrl = localStorage.getItem('inbody_supabase_url');
+            const customKey = localStorage.getItem('inbody_supabase_key');
+            return {
+                url: (customUrl && customUrl.length > 10) ? customUrl : SUPABASE_URL,
+                key: (customKey && customKey.length > 10) ? customKey : SUPABASE_KEY,
+            };
         }
 
-        // Dynamic script loader — never blocks the page
-        function loadExternalScript(url, callback) {
-            try {
-                const s = document.createElement('script');
-                s.src = url;
-                s.async = true;
-                s.onload = function() { if (callback) callback(true); };
-                s.onerror = function() { console.log('No se pudo cargar: ' + url); if (callback) callback(false); };
-                document.head.appendChild(s);
-            } catch (e) {
-                console.log('Error cargando script:', e.message);
-                if (callback) callback(false);
+        function supabaseHeaders() {
+            const cfg = getSupabaseConfig();
+            return {
+                'apikey': cfg.key,
+                'Authorization': 'Bearer ' + cfg.key,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal',
+            };
+        }
+
+        // Direct REST calls to Supabase — zero external dependencies
+        const supabaseRest = {
+            async insert(table, data) {
+                const cfg = getSupabaseConfig();
+                const res = await fetch(cfg.url + '/rest/v1/' + table, {
+                    method: 'POST',
+                    headers: supabaseHeaders(),
+                    body: JSON.stringify(data),
+                });
+                return { ok: res.ok, status: res.status };
+            },
+            async update(table, match, data) {
+                const cfg = getSupabaseConfig();
+                const params = Object.entries(match).map(([k,v]) => k + '=eq.' + encodeURIComponent(v)).join('&');
+                const res = await fetch(cfg.url + '/rest/v1/' + table + '?' + params, {
+                    method: 'PATCH',
+                    headers: supabaseHeaders(),
+                    body: JSON.stringify(data),
+                });
+                return { ok: res.ok, status: res.status };
+            },
+            async select(table, params) {
+                const cfg = getSupabaseConfig();
+                const hdrs = supabaseHeaders();
+                hdrs['Prefer'] = 'count=exact';
+                const res = await fetch(cfg.url + '/rest/v1/' + table + '?' + (params || 'select=*&order=created_at.desc&limit=200'), {
+                    method: 'GET',
+                    headers: hdrs,
+                });
+                if (!res.ok) return { data: null, error: res.statusText, count: 0 };
+                const data = await res.json();
+                const count = parseInt(res.headers.get('content-range')?.split('/')[1] || data.length);
+                return { data, error: null, count };
+            },
+            async test() {
+                try {
+                    const cfg = getSupabaseConfig();
+                    const res = await fetch(cfg.url + '/rest/v1/leads?select=id&limit=1', {
+                        method: 'GET',
+                        headers: supabaseHeaders(),
+                    });
+                    return res.ok;
+                } catch (e) {
+                    return false;
+                }
             }
+        };
+
+        // Kept for backward compatibility
+        let supabase = null;
+        function initSupabase() {
+            supabase = supabaseRest;
+            supabaseReady = true;
+            console.log('Supabase REST directo inicializado');
+            return true;
         }
 
         async function testSupabaseConnection() {
-            if (!supabase) return false;
             try {
-                const { data, error } = await supabase.from('leads').select('id').limit(1);
-                return !error;
+                return await supabaseRest.test();
             } catch (e) {
                 return false;
             }
@@ -1271,18 +1307,17 @@
             if (leads.length > 500) leads.length = 500;
             localStorage.setItem('inbody_leads', JSON.stringify(leads));
 
-            // Supabase insert
-            if (supabase) {
+            // Supabase insert (direct REST)
+            if (supabaseReady) {
                 try {
-                    const { error } = await supabase.from('leads').insert({
+                    await supabaseRest.insert('leads', {
                         session_id: sessionId,
                         consultorio_id: state.consultorioId,
                         consultorio_nombre: consultorio ? consultorio.nombre : state.consultorioId,
                         estado: 'abandonado',
                     });
-                    if (error) console.error('Supabase insert error:', error);
                 } catch (e) {
-                    console.error('Supabase error:', e);
+                    console.log('Supabase insert error:', e.message);
                 }
             }
         }
@@ -1296,8 +1331,8 @@
                 localStorage.setItem('inbody_leads', JSON.stringify(leads));
             }
 
-            // Supabase update
-            if (supabase && state.currentLeadId) {
+            // Supabase update (direct REST)
+            if (supabaseReady && state.currentLeadId) {
                 try {
                     const supaData = {};
                     if (data.nombre) supaData.nombre = data.nombre;
@@ -1307,12 +1342,9 @@
                     if (data.talla) supaData.talla = data.talla;
                     if (data.estado) supaData.estado = data.estado;
 
-                    await supabase
-                        .from('leads')
-                        .update(supaData)
-                        .eq('session_id', state.currentLeadId);
+                    await supabaseRest.update('leads', { session_id: state.currentLeadId }, supaData);
                 } catch (e) {
-                    console.error('Supabase update error:', e);
+                    console.log('Supabase update error:', e.message);
                 }
             }
         }
@@ -1735,14 +1767,12 @@
         async function loadLeads() {
             let leads = [];
 
-            // Try Supabase first, fall back to localStorage
-            if (supabase) {
+            // Try Supabase REST first, fall back to localStorage
+            if (supabaseReady) {
                 try {
-                    const { data, error } = await supabase
-                        .from('leads')
-                        .select('*')
-                        .order('created_at', { ascending: false })
-                        .limit(500);
+                    const result = await supabaseRest.select('leads', 'select=*&order=created_at.desc&limit=500');
+                    const data = result.data;
+                    const error = result.error;
 
                     if (!error && data) {
                         leads = data.map(row => ({
@@ -1827,14 +1857,11 @@
         async function exportLeadsCSV() {
             let leads = [];
 
-            if (supabase) {
+            if (supabaseReady) {
                 try {
-                    const { data, error } = await supabase
-                        .from('leads')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-                    if (!error && data) {
-                        leads = data.map(row => ({
+                    const result = await supabaseRest.select('leads', 'select=*&order=created_at.desc');
+                    if (!result.error && result.data) {
+                        leads = result.data.map(row => ({
                             fecha: new Date(row.created_at).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
                             consultorioId: row.consultorio_id,
                             consultorioNombre: row.consultorio_nombre,
@@ -1971,48 +1998,15 @@
             }
             localStorage.setItem('inbody_supabase_url', url);
             localStorage.setItem('inbody_supabase_key', key);
+            supabaseReady = true;
 
-            // If library not loaded yet, try loading it now
-            const sb = window.supabase || window.Supabase;
-            if (!sb || !sb.createClient) {
-                const statusEl = document.getElementById('supabaseStatus');
-                statusEl.style.background = '#FFF3E0';
-                statusEl.style.color = '#E65100';
-                statusEl.textContent = 'Cargando librería Supabase...';
-
-                // Try multiple CDNs
-                const cdns = [
-                    'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js',
-                    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js',
-                    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
-                ];
-                let loaded = false;
-                for (const cdn of cdns) {
-                    if (loaded) break;
-                    loaded = await new Promise(resolve => {
-                        loadExternalScript(cdn, function(ok) { resolve(ok); });
-                    });
-                }
-                if (!loaded) {
-                    alert('No se pudo cargar la librería de Supabase. Intenta desactivar Brave Shields para esta página (ícono del león en la barra de direcciones) y recarga.');
-                    updateSupabaseStatus(false);
-                    return;
-                }
-            }
-
-            const ok = initSupabase();
-            if (ok) {
-                const connected = await testSupabaseConnection();
-                updateSupabaseStatus(connected);
-                if (connected) {
-                    loadLeads();
-                    alert('Conexión exitosa con Supabase');
-                } else {
-                    alert('No se pudo conectar. Verifica la URL, Key y que la tabla "leads" exista.');
-                }
+            const connected = await testSupabaseConnection();
+            updateSupabaseStatus(connected);
+            if (connected) {
+                loadLeads();
+                alert('Conexión exitosa con Supabase');
             } else {
-                updateSupabaseStatus(false);
-                alert('Error inicializando Supabase. Verifica que la key sea correcta.');
+                alert('No se pudo conectar. Verifica la URL, Key y que la tabla "leads" exista.');
             }
         });
 
@@ -2022,14 +2016,14 @@
                 el.style.background = '#E8F5E9';
                 el.style.color = '#2E7D32';
                 el.textContent = 'Conectado a Supabase — los leads se guardan en la nube';
-            } else if (supabase) {
+            } else if (supabaseReady) {
                 el.style.background = '#FFF3E0';
                 el.style.color = '#E65100';
-                el.textContent = 'Inicializado pero sin conexión a la tabla — revisa que la tabla "leads" exista';
+                el.textContent = 'Configurado pero sin conexión a la tabla — revisa URL, Key y que la tabla "leads" exista';
             } else {
-                el.style.background = '#FFEBEE';
-                el.style.color = '#C62828';
-                el.textContent = 'Error cargando librería Supabase — los leads se guardan solo en este navegador';
+                el.style.background = '#FFF3E0';
+                el.style.color = '#E65100';
+                el.textContent = 'Sin configurar — ingresa la URL y Key de Supabase abajo';
             }
         }
 
@@ -2073,28 +2067,13 @@
                 ]);
             }, 500);
 
-            // Load Supabase library in background (non-blocking, multiple CDN fallbacks)
-            function tryLoadSupabase(urls, idx) {
-                if (idx >= urls.length) { console.log('Supabase: no se pudo cargar de ningún CDN'); return; }
-                loadExternalScript(urls[idx], function(ok) {
-                    if (ok) {
-                        try { initSupabase(); } catch(e) { console.log('Supabase init error:', e.message); }
-                    } else {
-                        tryLoadSupabase(urls, idx + 1);
-                    }
-                });
-            }
-            tryLoadSupabase([
-                'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js',
-                'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
-                'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js',
-            ], 0);
-
-            // Load QR library in background (only needed for admin panel)
-            loadExternalScript(
-                'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
-                function(ok) { if (ok) console.log('QRCode library loaded'); }
-            );
+            // Initialize Supabase REST connection (no external library needed)
+            initSupabase();
+            // Test connection in background
+            testSupabaseConnection().then(ok => {
+                if (ok) console.log('Supabase conectado correctamente');
+                else console.log('Supabase: sin conexión, usando localStorage');
+            });
         });
     </script>
 </body>
