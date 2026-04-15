@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InBody - Análisis de Composición Corporal</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer onerror="console.log('Supabase CDN no disponible, usando localStorage')"></script>
+    <!-- External scripts loaded dynamically after page is functional -->
     <style>
         :root {
             --primary: #1A6B5A;
@@ -1195,13 +1194,28 @@
                     console.log('Supabase inicializado correctamente');
                     return true;
                 } else {
-                    console.error('Librería Supabase no disponible. window.supabase:', typeof window.supabase);
+                    console.log('Librería Supabase no disponible aún');
                     return false;
                 }
             } catch (e) {
-                console.error('Error inicializando Supabase:', e);
+                console.log('Supabase no disponible, usando localStorage:', e.message);
                 supabase = null;
                 return false;
+            }
+        }
+
+        // Dynamic script loader — never blocks the page
+        function loadExternalScript(url, callback) {
+            try {
+                const s = document.createElement('script');
+                s.src = url;
+                s.async = true;
+                s.onload = function() { if (callback) callback(true); };
+                s.onerror = function() { console.log('No se pudo cargar: ' + url); if (callback) callback(false); };
+                document.head.appendChild(s);
+            } catch (e) {
+                console.log('Error cargando script:', e.message);
+                if (callback) callback(false);
             }
         }
 
@@ -2012,10 +2026,8 @@
 
         window.addEventListener('load', () => {
             state.consultorioId = getParam('c') || 'centro';
-            // Intentar conectar Supabase después de que cargue todo
-            setTimeout(() => { initSupabase(); }, 1500);
 
-            // Initial message
+            // Initial message — runs immediately, zero external dependencies
             setTimeout(() => {
                 addMessage(CONFIG.messages.welcome);
                 showQuickReplies([
@@ -2023,6 +2035,22 @@
                     { label: 'Ver información', value: 'info' },
                 ]);
             }, 500);
+
+            // Load Supabase library in background (non-blocking)
+            loadExternalScript(
+                'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+                function(ok) {
+                    if (ok) {
+                        try { initSupabase(); } catch(e) { console.log('Supabase init error:', e.message); }
+                    }
+                }
+            );
+
+            // Load QR library in background (only needed for admin panel)
+            loadExternalScript(
+                'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
+                function(ok) { if (ok) console.log('QRCode library loaded'); }
+            );
         });
     </script>
 </body>
