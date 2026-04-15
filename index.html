@@ -1,1298 +1,1616 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Estudio InBody &mdash; An&aacute;lisis de Composici&oacute;n Corporal</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --accent: #1a6b5a;
-  --accent-light: #e8f4f1;
-  --accent-hover: #145647;
-  --accent-muted: #2d8b77;
-  --text-primary: #1a1a1a;
-  --text-secondary: #555;
-  --text-tertiary: #888;
-  --bg: #ffffff;
-  --bg-alt: #f7f8f9;
-  --bg-dark: #0f1f1b;
-  --border: #e2e4e8;
-  --radius: 10px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-  --transition: 0.3s ease;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: var(--text-primary);
-  background: var(--bg);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ─── HERO ─── */
-.hero {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-
-.hero-image {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.hero-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.hero-image::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(15, 31, 27, 0.92) 0%,
-    rgba(15, 31, 27, 0.75) 50%,
-    rgba(15, 31, 27, 0.3) 100%
-  );
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  padding: 60px 24px;
-  max-width: 680px;
-  margin: 0 auto 0 8%;
-}
-
-.consultorio-badge {
-  display: inline-block;
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 6px 14px;
-  border-radius: 20px;
-  margin-bottom: 28px;
-  letter-spacing: 0.04em;
-}
-
-.hero h1 {
-  font-size: clamp(30px, 6vw, 48px);
-  font-weight: 700;
-  line-height: 1.1;
-  color: #fff;
-  margin-bottom: 20px;
-  letter-spacing: -0.03em;
-}
-
-.hero p.subtitle {
-  font-size: 17px;
-  color: rgba(255,255,255,0.75);
-  line-height: 1.7;
-  margin-bottom: 36px;
-  max-width: 480px;
-}
-
-.cta-button {
-  display: inline-block;
-  background: var(--accent);
-  color: #fff;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 16px 36px;
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: background var(--transition), transform var(--transition);
-  text-decoration: none;
-  letter-spacing: 0.01em;
-}
-
-.cta-button:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-}
-
-.cta-button-outline {
-  display: inline-block;
-  background: transparent;
-  color: #fff;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  padding: 16px 36px;
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all var(--transition);
-  text-decoration: none;
-  margin-left: 12px;
-}
-
-.cta-button-outline:hover {
-  border-color: rgba(255,255,255,0.6);
-  background: rgba(255,255,255,0.05);
-}
-
-/* ─── SECTIONS ─── */
-.section {
-  padding: 100px 24px;
-  max-width: 780px;
-  margin: 0 auto;
-}
-
-.section-wide {
-  padding: 100px 24px;
-  max-width: 960px;
-  margin: 0 auto;
-}
-
-.section-dark { background: var(--bg-alt); }
-
-.section-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 16px;
-}
-
-.section h2, .section-wide h2 {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-.section p, .section-wide p {
-  font-size: 16px;
-  color: var(--text-secondary);
-  line-height: 1.8;
-  margin-bottom: 16px;
-}
-
-/* ─── ABOUT INBODY ─── */
-.about-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: center;
-  margin-top: 48px;
-}
-
-.about-image {
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.about-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.about-text h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  margin-top: 24px;
-}
-
-.about-text h3:first-child { margin-top: 0; }
-
-.about-text p {
-  font-size: 15px;
-  color: var(--text-secondary);
-  line-height: 1.75;
-  margin-bottom: 0;
-}
-
-/* ─── VIDEO ─── */
-.video-container {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #0a0a0a;
-  border-radius: var(--radius);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 48px 0 0;
-  overflow: hidden;
-  position: relative;
-  cursor: pointer;
-}
-
-.play-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.1);
-  border: 2px solid rgba(255,255,255,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition);
-}
-
-.video-container:hover .play-icon {
-  background: rgba(255,255,255,0.15);
-  border-color: rgba(255,255,255,0.5);
-}
-
-.play-icon svg { width: 24px; height: 24px; fill: #fff; margin-left: 3px; }
-.video-label { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 16px; }
-
-/* ─── METRICS ─── */
-.metrics-intro {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: center;
-  margin-bottom: 48px;
-}
-
-.metrics-image {
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-}
-
-.metrics-image img { width: 100%; display: block; }
-
-.metrics {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.metric-card {
-  padding: 28px 24px;
-  background: var(--bg);
-}
-
-.metric-card h3 {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: var(--text-primary);
-}
-
-.metric-card p {
-  font-size: 14px;
-  color: var(--text-tertiary);
-  margin: 0;
-  line-height: 1.5;
-}
-
-/* ─── PARA QUIEN ─── */
-.audience-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 40px;
-}
-
-.audience-card {
-  padding: 28px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg);
-}
-
-.audience-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
-.audience-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
-
-/* ─── PROCESS ─── */
-.process-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: center;
-  margin-top: 48px;
-}
-
-.process-image { border-radius: var(--radius); overflow: hidden; }
-.process-image img { width: 100%; display: block; }
-.process-steps { display: flex; flex-direction: column; gap: 28px; }
-.process-step { display: flex; gap: 16px; align-items: flex-start; }
-
-.step-number {
-  width: 36px; height: 36px; min-width: 36px; border-radius: 50%;
-  background: var(--accent); color: #fff; display: flex; align-items: center;
-  justify-content: center; font-size: 14px; font-weight: 600;
-}
-
-.step-content h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-.step-content p { font-size: 14px; margin: 0; }
-
-/* ─── FAQ ─── */
-.faq-list { margin-top: 40px; }
-
-.faq-item {
-  border-bottom: 1px solid var(--border);
-  padding: 24px 0;
-  cursor: pointer;
-}
-
-.faq-item:first-child { border-top: 1px solid var(--border); }
-
-.faq-question {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.faq-question span {
-  font-size: 20px; color: var(--text-tertiary);
-  transition: transform var(--transition); line-height: 1;
-}
-
-.faq-item.open .faq-question span { transform: rotate(45deg); }
-
-.faq-answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease, padding 0.35s ease;
-}
-
-.faq-item.open .faq-answer { max-height: 200px; padding-top: 16px; }
-
-.faq-answer p {
-  font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin: 0;
-}
-
-/* ─── TESTIMONIOS ─── */
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 20px;
-  margin-top: 48px;
-}
-
-.testimonial-card {
-  padding: 32px 28px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg);
-}
-
-.testimonial-text {
-  font-size: 15px; color: var(--text-secondary);
-  line-height: 1.7; margin-bottom: 20px; font-style: italic;
-}
-
-.testimonial-author { display: flex; align-items: center; gap: 12px; }
-
-.testimonial-avatar {
-  width: 40px; height: 40px; border-radius: 50%; background: var(--accent-light);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 600; color: var(--accent);
-}
-
-.testimonial-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-.testimonial-detail { font-size: 13px; color: var(--text-tertiary); }
-
-/* ─── CTA FINAL ─── */
-.cta-final {
-  text-align: center; padding: 100px 24px;
-  background: var(--bg-dark); color: #fff;
-}
-
-.cta-final h2 {
-  font-size: 32px; font-weight: 700; margin-bottom: 12px;
-  letter-spacing: -0.02em; color: #fff;
-}
-
-.cta-final p { font-size: 16px; color: rgba(255,255,255,0.6); margin-bottom: 36px; }
-
-/* ─── FORM ─── */
-.form-overlay {
-  display: none; position: fixed; inset: 0; background: var(--bg);
-  z-index: 1000; overflow-y: auto;
-}
-
-.form-overlay.active { display: block; }
-
-.form-header {
-  position: fixed; top: 0; left: 0; right: 0; height: 56px;
-  background: var(--bg); border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px; z-index: 10;
-}
-
-.form-header .back-btn {
-  font-family: inherit; font-size: 14px; color: var(--text-secondary);
-  background: none; border: none; cursor: pointer; padding: 8px 0;
-}
-
-.form-header .back-btn:hover { color: var(--text-primary); }
-
-.progress-bar {
-  height: 3px; background: var(--border);
-  position: fixed; top: 56px; left: 0; right: 0; z-index: 10;
-}
-
-.progress-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; width: 0%; }
-
-.form-step {
-  display: none; min-height: 100vh; padding: 120px 24px 80px;
-  max-width: 520px; margin: 0 auto; animation: fadeUp 0.35s ease;
-}
-
-.form-step.active { display: flex; flex-direction: column; justify-content: center; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.form-step .step-label {
-  font-size: 12px; font-weight: 600; color: var(--accent);
-  margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.06em;
-}
-
-.form-step h2 { font-size: 24px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.01em; }
-.form-step .step-desc { font-size: 15px; color: var(--text-secondary); margin-bottom: 32px; }
-
-.form-input {
-  width: 100%; font-family: inherit; font-size: 18px; padding: 16px 0;
-  border: none; border-bottom: 2px solid var(--border); outline: none;
-  background: transparent; color: var(--text-primary); transition: border-color var(--transition);
-}
-
-.form-input:focus { border-color: var(--accent); }
-.form-input::placeholder { color: #ccc; }
-
-.gender-options { display: flex; gap: 12px; margin-top: 8px; }
-
-.gender-card {
-  flex: 1; padding: 20px; border: 2px solid var(--border); border-radius: var(--radius);
-  text-align: center; cursor: pointer; transition: all var(--transition);
-  font-size: 15px; font-weight: 500; color: var(--text-secondary); background: var(--bg);
-}
-
-.gender-card:hover { border-color: var(--accent); color: var(--text-primary); }
-.gender-card.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
-
-.schedule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-
-.schedule-option {
-  padding: 16px; border: 2px solid var(--border); border-radius: var(--radius);
-  text-align: center; cursor: pointer; transition: all var(--transition);
-  font-size: 14px; font-weight: 500; color: var(--text-secondary);
-}
-
-.schedule-option:hover { border-color: var(--accent); color: var(--text-primary); }
-.schedule-option.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
-.schedule-option .time-label { display: block; font-size: 13px; color: var(--text-tertiary); margin-top: 4px; font-weight: 400; }
-
-.next-btn {
-  margin-top: 40px; display: inline-block; background: var(--accent); color: #fff;
-  font-family: inherit; font-size: 15px; font-weight: 600; padding: 14px 32px;
-  border: none; border-radius: var(--radius); cursor: pointer;
-  transition: background var(--transition), opacity var(--transition);
-}
-
-.next-btn:hover { background: var(--accent-hover); }
-.next-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
-.input-hint { font-size: 13px; color: var(--text-tertiary); margin-top: 8px; }
-.input-error { font-size: 13px; color: #c0392b; margin-top: 8px; display: none; }
-
-/* Confirmation */
-.confirmation { text-align: center; }
-
-.check-circle {
-  width: 64px; height: 64px; border-radius: 50%; background: var(--accent-light);
-  display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;
-}
-
-.check-circle svg { width: 28px; height: 28px; stroke: var(--accent); }
-
-.summary-table { text-align: left; width: 100%; margin: 24px 0; border-collapse: collapse; }
-.summary-table tr { border-bottom: 1px solid var(--border); }
-.summary-table td { padding: 12px 0; font-size: 15px; }
-.summary-table td:first-child { color: var(--text-tertiary); width: 140px; font-size: 14px; }
-
-.whatsapp-btn {
-  display: inline-block; background: #25d366; color: #fff;
-  font-family: inherit; font-size: 15px; font-weight: 600; padding: 16px 36px;
-  border: none; border-radius: var(--radius); cursor: pointer;
-  transition: background var(--transition); text-decoration: none; margin-top: 16px;
-}
-
-.whatsapp-btn:hover { background: #1fb855; }
-
-/* ─── ADMIN ─── */
-.admin-trigger {
-  position: fixed; bottom: 16px; right: 16px; width: 40px; height: 40px;
-  border-radius: 50%; background: var(--bg-alt); border: 1px solid var(--border);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  z-index: 500; transition: all var(--transition);
-}
-
-.admin-trigger:hover { background: var(--border); }
-.admin-trigger svg { width: 18px; height: 18px; stroke: var(--text-tertiary); }
-
-.admin-overlay {
-  display: none; position: fixed; inset: 0; background: var(--bg);
-  z-index: 2000; overflow-y: auto;
-}
-
-.admin-overlay.active { display: block; }
-
-.admin-login {
-  min-height: 100vh; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; padding: 24px;
-}
-
-.admin-login h2 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
-.admin-login p { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
-
-.admin-login-input {
-  width: 280px; font-family: inherit; font-size: 16px; padding: 14px 16px;
-  border: 2px solid var(--border); border-radius: var(--radius); outline: none;
-  text-align: center; transition: border-color var(--transition);
-}
-
-.admin-login-input:focus { border-color: var(--accent); }
-.admin-login-error { font-size: 13px; color: #c0392b; margin-top: 8px; display: none; }
-
-.admin-login-btn {
-  margin-top: 16px; background: var(--accent); color: #fff;
-  font-family: inherit; font-size: 15px; font-weight: 600;
-  padding: 14px 32px; border: none; border-radius: var(--radius); cursor: pointer;
-}
-
-.admin-panel { display: none; padding: 32px 24px; max-width: 900px; margin: 0 auto; }
-.admin-panel.active { display: block; }
-
-.admin-panel-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
-}
-
-.admin-panel-header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
-
-.admin-close {
-  font-family: inherit; font-size: 14px; color: var(--text-secondary);
-  background: none; border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 8px 16px; cursor: pointer;
-}
-
-.admin-close:hover { background: var(--bg-alt); }
-
-.consultorio-card {
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 28px; margin-bottom: 20px; transition: box-shadow var(--transition);
-}
-
-.consultorio-card:hover { box-shadow: var(--shadow-sm); }
-
-.consultorio-card-header {
-  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;
-}
-
-.consultorio-card-header h3 { font-size: 17px; font-weight: 600; }
-.consultorio-card-header p { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }
-
-.consultorio-fields {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;
-}
-
-.field-group label {
-  display: block; font-size: 12px; font-weight: 500; color: var(--text-tertiary);
-  margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;
-}
-
-.field-input {
-  width: 100%; font-family: inherit; font-size: 14px; padding: 10px 12px;
-  border: 1px solid var(--border); border-radius: 6px; outline: none;
-  transition: border-color var(--transition);
-}
-
-.field-input:focus { border-color: var(--accent); }
-
-.qr-section {
-  display: flex; align-items: center; gap: 20px;
-  padding-top: 20px; border-top: 1px solid var(--border);
-}
-
-.qr-box {
-  width: 120px; height: 120px; min-width: 120px;
-  display: flex; align-items: center; justify-content: center;
-  background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
-}
-
-.qr-box canvas, .qr-box img { max-width: 100%; max-height: 100%; }
-.qr-actions { display: flex; flex-direction: column; gap: 8px; }
-.qr-url { font-size: 12px; color: var(--text-tertiary); word-break: break-all; line-height: 1.4; }
-
-.download-qr-btn {
-  font-family: inherit; font-size: 13px; font-weight: 500; color: var(--accent);
-  background: var(--accent-light); border: none; border-radius: 6px;
-  padding: 8px 16px; cursor: pointer; transition: background var(--transition);
-}
-
-.download-qr-btn:hover { background: #d0ebe5; }
-
-.save-config-btn {
-  font-family: inherit; font-size: 13px; font-weight: 500; color: #fff;
-  background: var(--accent); border: none; border-radius: 6px;
-  padding: 8px 16px; cursor: pointer;
-}
-
-.admin-note {
-  font-size: 13px; color: var(--text-tertiary); line-height: 1.6;
-  margin-top: 32px; padding: 20px; background: var(--bg-alt); border-radius: var(--radius);
-}
-
-.footer {
-  padding: 40px 24px; text-align: center; font-size: 13px;
-  color: var(--text-tertiary); border-top: 1px solid var(--border);
-}
-
-/* ─── RESPONSIVE ─── */
-@media (max-width: 768px) {
-  .hero-content { margin: 0 auto; padding: 40px 24px; }
-  .hero-image::after {
-    background: linear-gradient(to bottom, rgba(15,31,27,0.85) 0%, rgba(15,31,27,0.7) 100%);
-  }
-  .about-grid, .metrics-intro, .process-grid { grid-template-columns: 1fr; }
-  .metrics { grid-template-columns: 1fr; }
-  .audience-grid { grid-template-columns: 1fr; }
-  .testimonials-grid { grid-template-columns: 1fr; }
-  .consultorio-fields { grid-template-columns: 1fr; }
-  .qr-section { flex-direction: column; text-align: center; }
-  .schedule-grid { grid-template-columns: 1fr; }
-  .cta-button-outline { margin-left: 0; margin-top: 12px; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InBody - Análisis de Composición Corporal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #1A6B5A;
+            --primary-light: #2A8B7A;
+            --primary-dark: #0F4A3A;
+            --gray-light: #F5F5F5;
+            --gray-medium: #E8E8E8;
+            --gray-dark: #666666;
+            --gray-text: #333333;
+            --white: #FFFFFF;
+            --error: #D32F2F;
+            --success: #388E3C;
+            --border: #DDDDDD;
+        }
+ 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+ 
+        html, body {
+            height: 100%;
+            width: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--white);
+            color: var(--gray-text);
+        }
+ 
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+ 
+        /* HEADER */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+        }
+ 
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+            flex: 1;
+        }
+ 
+        .medical-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+ 
+        .medical-icon::before {
+            content: '✚';
+            font-size: 20px;
+            font-weight: bold;
+        }
+ 
+        .admin-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--gray-dark);
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+ 
+        .admin-button:hover {
+            color: var(--primary);
+        }
+ 
+        /* CHAT CONTAINER */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--white);
+        }
+ 
+        .messages-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+ 
+        .messages-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+ 
+        .messages-wrapper::-webkit-scrollbar-track {
+            background: var(--gray-light);
+        }
+ 
+        .messages-wrapper::-webkit-scrollbar-thumb {
+            background: var(--gray-medium);
+            border-radius: 3px;
+        }
+ 
+        /* MESSAGE BUBBLES */
+        .message {
+            display: flex;
+            gap: 8px;
+            animation: slideIn 0.3s ease-out;
+        }
+ 
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+ 
+        .message.system {
+            justify-content: flex-start;
+        }
+ 
+        .message.user {
+            justify-content: flex-end;
+        }
+ 
+        .bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+ 
+        .message.system .bubble {
+            background: var(--gray-light);
+            color: var(--gray-text);
+            border: 1px solid var(--gray-medium);
+        }
+ 
+        .message.user .bubble {
+            background: var(--primary);
+            color: var(--white);
+        }
+ 
+        .bubble.error {
+            background: #FFEBEE;
+            color: var(--error);
+            border: 1px solid #FFCDD2;
+        }
+ 
+        .bubble.success {
+            background: #E8F5E9;
+            color: var(--success);
+            border: 1px solid #C8E6C9;
+        }
+ 
+        /* INFO SECTION */
+        .info-section {
+            background: var(--gray-light);
+            padding: 16px;
+            border-radius: 12px;
+            margin: 12px 0;
+            border-left: 4px solid var(--primary);
+        }
+ 
+        .info-section h3 {
+            color: var(--primary);
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+ 
+        .info-section p {
+            color: var(--gray-text);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+ 
+        /* CONFIRMATION PANEL */
+        .confirmation-panel {
+            background: var(--gray-light);
+            padding: 16px;
+            border-radius: 12px;
+            margin: 12px 0;
+            border: 1px solid var(--gray-medium);
+        }
+ 
+        .confirmation-panel h3 {
+            font-size: 16px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+ 
+        .confirmation-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+ 
+        .confirmation-row:last-child {
+            border-bottom: none;
+        }
+ 
+        .confirmation-label {
+            color: var(--gray-dark);
+            font-weight: 500;
+        }
+ 
+        .confirmation-value {
+            color: var(--gray-text);
+            text-align: right;
+            flex: 1;
+            margin-left: 16px;
+        }
+ 
+        /* BUTTONS */
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+ 
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+ 
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+ 
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+ 
+        .btn-primary:active {
+            background: var(--primary-dark);
+        }
+ 
+        .btn-secondary {
+            background: var(--gray-medium);
+            color: var(--gray-text);
+            border: 1px solid var(--border);
+        }
+ 
+        .btn-secondary:hover {
+            background: var(--gray-light);
+        }
+ 
+        .btn-secondary:active {
+            background: var(--border);
+        }
+ 
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 13px;
+            min-width: 80px;
+        }
+ 
+        /* INPUT AREA */
+        .input-area {
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+            background: var(--white);
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+        }
+ 
+        .input-field {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--gray-text);
+            transition: border-color 0.2s;
+        }
+ 
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(26, 107, 90, 0.1);
+        }
+ 
+        .input-field::placeholder {
+            color: #AAAAAA;
+        }
+ 
+        .btn-send {
+            padding: 10px 16px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+ 
+        .btn-send:hover {
+            background: var(--primary-light);
+        }
+ 
+        .btn-send:active {
+            background: var(--primary-dark);
+        }
+ 
+        /* TYPING INDICATOR */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+        }
+ 
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-dark);
+            animation: typing 1.4s infinite;
+        }
+ 
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+ 
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+ 
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.5;
+                transform: translateY(0);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(-8px);
+            }
+        }
+ 
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+ 
+        .modal-overlay.visible {
+            display: flex;
+        }
+ 
+        .modal {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: modalIn 0.3s ease-out;
+        }
+ 
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+ 
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+ 
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-dark);
+        }
+ 
+        .modal-close:hover {
+            color: var(--gray-text);
+        }
+ 
+        /* ADMIN PANEL */
+        .admin-section {
+            margin-bottom: 24px;
+        }
+ 
+        .admin-section h2 {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--gray-medium);
+            padding-bottom: 8px;
+        }
+ 
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+ 
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+ 
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-dark);
+        }
+ 
+        .form-group input {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+ 
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(26, 107, 90, 0.1);
+        }
+ 
+        .consultorio-item {
+            background: var(--gray-light);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+ 
+        .consultorio-info {
+            flex: 1;
+            font-size: 14px;
+        }
+ 
+        .consultorio-info .name {
+            font-weight: 600;
+            color: var(--gray-text);
+        }
+ 
+        .consultorio-info .meta {
+            font-size: 12px;
+            color: var(--gray-dark);
+            margin-top: 4px;
+        }
+ 
+        .consultorio-actions {
+            display: flex;
+            gap: 6px;
+        }
+ 
+        .btn-icon {
+            padding: 6px 10px;
+            font-size: 12px;
+            flex: 0;
+            min-width: auto;
+        }
+ 
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+ 
+        .stat-card {
+            background: var(--gray-light);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--gray-medium);
+        }
+ 
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+ 
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-dark);
+            margin-top: 4px;
+        }
+ 
+        .qr-container {
+            background: var(--white);
+            padding: 12px;
+            border-radius: 8px;
+            display: inline-block;
+            border: 1px solid var(--border);
+        }
+ 
+        .qr-label {
+            font-size: 12px;
+            color: var(--gray-dark);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+ 
+        /* WELCOME MODAL */
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+ 
+        .welcome-modal.hidden {
+            display: none;
+        }
+ 
+        .welcome-content {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+ 
+        .welcome-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+ 
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+ 
+        .welcome-subtitle {
+            font-size: 14px;
+            color: var(--gray-dark);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+ 
+        .welcome-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+ 
+        @media (max-width: 600px) {
+            .modal {
+                width: 95%;
+                max-height: 90vh;
+            }
+ 
+            .welcome-content {
+                width: 95%;
+                padding: 24px;
+            }
+ 
+            .button-group {
+                flex-direction: column;
+            }
+ 
+            .btn {
+                min-width: auto;
+            }
+ 
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+ 
+            .bubble {
+                max-width: 95%;
+            }
+        }
+ 
+        /* HIDE ELEMENTS */
+        .hidden {
+            display: none !important;
+        }
+ 
+        .invisible {
+            visibility: hidden;
+        }
+    </style>
 </head>
 <body>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- HERO -->
-<!-- ═══════════════════════════════════════ -->
-<div class="hero">
-  <div class="hero-image">
-    <img src="hero.jpg" alt="Estudio InBody">
-  </div>
-  <div class="hero-content">
-    <span class="consultorio-badge" id="badge-consultorio">Consultorio</span>
-    <h1>Conoce la composici&oacute;n real de tu cuerpo</h1>
-    <p class="subtitle">
-      Un an&aacute;lisis cl&iacute;nico que mide con precisi&oacute;n tu masa muscular, grasa corporal, agua y metabolismo. Sin agujas. Sin dolor. En 20 segundos.
-    </p>
-    <button class="cta-button" onclick="openForm()">Agendar mi estudio</button>
-    <a class="cta-button-outline" href="#que-es">Conocer m&aacute;s</a>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- QU&Eacute; ES INBODY -->
-<!-- ═══════════════════════════════════════ -->
-<div class="section" id="que-es">
-  <span class="section-label">Sobre el estudio</span>
-  <h2>Qu&eacute; es InBody</h2>
-  <p>
-    InBody es un equipo de an&aacute;lisis de composici&oacute;n corporal utilizado en hospitales, cl&iacute;nicas y centros de alto rendimiento en m&aacute;s de 110 pa&iacute;ses. Funciona mediante bioimpedancia el&eacute;ctrica segmentaria, una tecnolog&iacute;a que env&iacute;a corrientes el&eacute;ctricas imperceptibles a trav&eacute;s de tu cuerpo para medir con precisi&oacute;n m&eacute;dica la proporci&oacute;n de m&uacute;sculo, grasa, agua y masa &oacute;sea.
-  </p>
-  <p>
-    A diferencia de una b&aacute;scula convencional que solo muestra tu peso, InBody te dice de qu&eacute; est&aacute; compuesto ese peso. Dos personas pueden pesar lo mismo y tener composiciones corporales completamente distintas. InBody revela esa diferencia.
-  </p>
-
-  <div class="about-grid">
-    <div class="about-image">
-      <img src="equipo.jpg" alt="Equipo InBody">
-    </div>
-    <div class="about-text">
-      <h3>R&aacute;pido y no invasivo</h3>
-      <p>Te subes a la b&aacute;scula, sostienes los electrodos y en menos de 20 segundos obtienes un reporte completo. No requiere agujas, muestras de sangre ni preparaci&oacute;n especial.</p>
-      <h3>Precisi&oacute;n de grado m&eacute;dico</h3>
-      <p>InBody utiliza 8 electrodos t&aacute;ctiles con frecuencias m&uacute;ltiples para analizar 5 segmentos corporales de forma independiente. Es la tecnolog&iacute;a que usan nutri&oacute;logos, m&eacute;dicos deportivos y cirujanos bari&aacute;tricos para tomar decisiones cl&iacute;nicas.</p>
-      <h3>Resultados inmediatos</h3>
-      <p>Al terminar, recibes una hoja de resultados con m&aacute;s de 40 par&aacute;metros sobre tu estado corporal. Un especialista te ayudar&aacute; a interpretar cada uno.</p>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- VIDEO -->
-<!-- ═══════════════════════════════════════ -->
-<div class="section-dark">
-  <div class="section">
-    <span class="section-label">Video</span>
-    <h2>Mira c&oacute;mo funciona</h2>
-    <p>Un estudio r&aacute;pido, c&oacute;modo y sin dolor que te dar&aacute; informaci&oacute;n que ninguna b&aacute;scula convencional puede ofrecerte.</p>
-    <div class="video-container">
-      <div class="play-icon">
-        <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-      </div>
-      <span class="video-label">Video pr&oacute;ximamente</span>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- QU&Eacute; VAS A DESCUBRIR -->
-<!-- ═══════════════════════════════════════ -->
-<div class="section-wide">
-  <span class="section-label">Resultados</span>
-  <h2>Qu&eacute; vas a descubrir</h2>
-  <p>El reporte InBody desglosa tu cuerpo en m&eacute;tricas precisas que te permiten tomar mejores decisiones sobre tu salud, alimentaci&oacute;n y actividad f&iacute;sica.</p>
-
-  <div class="metrics-intro">
-    <div>
-      <div class="metrics">
-        <div class="metric-card">
-          <h3>Masa muscular</h3>
-          <p>Cantidad de m&uacute;sculo esquel&eacute;tico en cada segmento de tu cuerpo.</p>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-title">
+            <div class="medical-icon"></div>
+            <span>Asistente InBody</span>
         </div>
-        <div class="metric-card">
-          <h3>Porcentaje de grasa</h3>
-          <p>Proporci&oacute;n de grasa corporal respecto a tu peso total.</p>
+        <button class="admin-button" id="adminTrigger" title="Panel de administración">⚙️</button>
+    </div>
+ 
+    <!-- CHAT CONTAINER -->
+    <div class="chat-container">
+        <div class="messages-wrapper" id="messagesWrapper"></div>
+        <div class="input-area" id="inputArea">
+            <input
+                type="text"
+                class="input-field"
+                id="userInput"
+                placeholder="Escriba su respuesta..."
+                autocomplete="off"
+            >
+            <button class="btn-send" id="sendButton">Enviar</button>
         </div>
-        <div class="metric-card">
-          <h3>Grasa visceral</h3>
-          <p>Grasa que rodea tus &oacute;rganos internos. Un indicador clave de salud.</p>
+    </div>
+ 
+    <!-- WELCOME MODAL -->
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="welcome-content">
+            <div class="welcome-icon">✚</div>
+            <h2 class="welcome-title">Análisis InBody</h2>
+            <p class="welcome-subtitle">¿Desea agendar su estudio de composición corporal?</p>
+            <div class="welcome-buttons">
+                <button class="btn btn-primary" id="welcomeYes">Sí, agendar estudio</button>
+                <button class="btn btn-secondary" id="welcomeInfo">Ver información</button>
+            </div>
         </div>
-        <div class="metric-card">
-          <h3>Agua corporal</h3>
-          <p>Distribuci&oacute;n del agua intra y extracelular en tu organismo.</p>
+    </div>
+ 
+    <!-- ADMIN MODAL -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal">
+            <button class="modal-close" id="adminClose">✕</button>
+            <div class="modal-header">Panel de Administración</div>
+ 
+            <!-- PASSWORD ENTRY -->
+            <div id="adminPassword" class="admin-section">
+                <div class="admin-form">
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="adminPasswordInput" placeholder="Ingrese contraseña">
+                    </div>
+                    <button class="btn btn-primary" id="adminLogin">Ingresar</button>
+                </div>
+            </div>
+ 
+            <!-- ADMIN CONTENT (Hidden until login) -->
+            <div id="adminContent" class="hidden">
+                <!-- STATS -->
+                <div class="admin-section">
+                    <h2>Estadísticas</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="statsTotal">0</div>
+                            <div class="stat-label">Interacciones totales</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="statsCompleted">0</div>
+                            <div class="stat-label">Citas agendadas</div>
+                        </div>
+                    </div>
+                </div>
+ 
+                <!-- CONSULTORIOS -->
+                <div class="admin-section">
+                    <h2>Gestionar Consultorios</h2>
+                    <div class="admin-form">
+                        <div class="form-group">
+                            <label>ID (slug)</label>
+                            <input type="text" id="consultorioId" placeholder="ej: centro">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" id="consultorioName" placeholder="ej: Consultorio Centro">
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor/Doctora</label>
+                            <input type="text" id="consultorioDoctor" placeholder="ej: Dra. María García">
+                        </div>
+                        <div class="form-group">
+                            <label>Número WhatsApp</label>
+                            <input type="text" id="consultorioWhatsapp" placeholder="ej: 3312345678">
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección</label>
+                            <input type="text" id="consultorioAddress" placeholder="ej: Av. Juárez 120">
+                        </div>
+                        <button class="btn btn-primary" id="addConsultorio">Agregar Consultorio</button>
+                    </div>
+ 
+                    <div id="consultoriosList"></div>
+                </div>
+ 
+                <!-- QR GENERATOR -->
+                <div class="admin-section">
+                    <h2>Generar Códigos QR</h2>
+                    <div class="admin-form">
+                        <div class="form-group">
+                            <label>Seleccionar consultorio</label>
+                            <select id="qrConsultorio" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-family: inherit;">
+                                <option value="">-- Seleccionar --</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="generateQr">Generar QR</button>
+                    </div>
+                    <div id="qrOutput"></div>
+                </div>
+ 
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 20px;" id="adminLogout">Cerrar sesión</button>
+            </div>
         </div>
-        <div class="metric-card">
-          <h3>Tasa metab&oacute;lica</h3>
-          <p>Calor&iacute;as que tu cuerpo quema en reposo. Base de cualquier plan nutricional.</p>
-        </div>
-        <div class="metric-card">
-          <h3>Equilibrio segmental</h3>
-          <p>An&aacute;lisis por extremidad para detectar desbalances musculares.</p>
-        </div>
-      </div>
     </div>
-    <div class="metrics-image">
-      <img src="reporte.jpg" alt="Reporte InBody">
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- PARA QUI&Eacute;N -->
-<!-- ═══════════════════════════════════════ -->
-<div class="section-dark">
-  <div class="section">
-    <span class="section-label">Para qui&eacute;n es</span>
-    <h2>Este estudio es para ti si...</h2>
-    <div class="audience-grid">
-      <div class="audience-card">
-        <h3>Quieres bajar de peso</h3>
-        <p>Necesitas saber cu&aacute;nto de tu peso es grasa y cu&aacute;nto es m&uacute;sculo para que tu plan nutricional sea efectivo y no pierdas masa muscular en el proceso.</p>
-      </div>
-      <div class="audience-card">
-        <h3>Entrenas o haces deporte</h3>
-        <p>Mide si tu rutina est&aacute; generando resultados reales. Detecta desbalances musculares entre extremidades y ajusta tu entrenamiento con datos.</p>
-      </div>
-      <div class="audience-card">
-        <h3>Llevas un tratamiento nutricional</h3>
-        <p>Tu nutri&oacute;logo necesita datos objetivos para ajustar tu plan. InBody le da la informaci&oacute;n precisa para tomar mejores decisiones cl&iacute;nicas.</p>
-      </div>
-      <div class="audience-card">
-        <h3>Quieres conocer tu estado de salud</h3>
-        <p>Indicadores como la grasa visceral y la distribuci&oacute;n de agua corporal son marcadores tempranos de riesgo metab&oacute;lico. Mejor saberlo a tiempo.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- C&Oacute;MO FUNCIONA -->
-<!-- ═══════════════════════════════════════ -->
-<div class="section-wide">
-  <span class="section-label">Proceso</span>
-  <h2>C&oacute;mo funciona</h2>
-  <div class="process-grid">
-    <div class="process-steps">
-      <div class="process-step">
-        <div class="step-number">1</div>
-        <div class="step-content">
-          <h3>Agenda tu cita</h3>
-          <p>Llena el formulario con tus datos b&aacute;sicos y elige el horario que mejor te funcione. Recibir&aacute;s confirmaci&oacute;n por WhatsApp.</p>
-        </div>
-      </div>
-      <div class="process-step">
-        <div class="step-number">2</div>
-        <div class="step-content">
-          <h3>Acude a tu estudio</h3>
-          <p>Pres&eacute;ntate en la cl&iacute;nica. Te subes a la b&aacute;scula InBody, sostienes los electrodos con ambas manos y en menos de 20 segundos el equipo analiza tu composici&oacute;n corporal completa.</p>
-        </div>
-      </div>
-      <div class="process-step">
-        <div class="step-number">3</div>
-        <div class="step-content">
-          <h3>Recibe tu reporte</h3>
-          <p>Obtendr&aacute;s una hoja de resultados detallada con m&aacute;s de 40 par&aacute;metros. Un especialista te explicar&aacute; cada indicador y te orientar&aacute; sobre los siguientes pasos.</p>
-        </div>
-      </div>
-    </div>
-    <div class="process-image">
-      <img src="equipo.jpg" alt="Equipo InBody en cl&iacute;nica">
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- FAQ -->
-<!-- ═══════════════════════════════════════ -->
-<div class="section-dark">
-  <div class="section">
-    <span class="section-label">Preguntas frecuentes</span>
-    <h2>Lo que necesitas saber</h2>
-    <div class="faq-list">
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-question">&iquest;Duele o es inc&oacute;modo? <span>+</span></div>
-        <div class="faq-answer"><p>No. El estudio es completamente indoloro. La corriente el&eacute;ctrica que utiliza el equipo es tan baja que no se siente. Solo necesitas subirte a la b&aacute;scula y sostener los electrodos con las manos durante unos segundos.</p></div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-question">&iquest;Necesito ir en ayunas o con ropa especial? <span>+</span></div>
-        <div class="faq-answer"><p>No requiere ayuno. Se recomienda no haber realizado ejercicio intenso en las 2 horas previas y evitar consumir grandes cantidades de agua justo antes. Puedes ir con ropa ligera; solo es necesario retirar objetos met&aacute;licos como cinturones o joyer&iacute;a.</p></div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-question">&iquest;Cu&aacute;nto tiempo toma el estudio? <span>+</span></div>
-        <div class="faq-answer"><p>El an&aacute;lisis dura menos de 20 segundos. Considerando la preparaci&oacute;n y la revisi&oacute;n de resultados con el especialista, la cita completa toma aproximadamente 15 a 20 minutos.</p></div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-question">&iquest;Es seguro? &iquest;Puedo hac&eacute;rmelo si tengo marcapasos? <span>+</span></div>
-        <div class="faq-answer"><p>InBody es seguro para la gran mayor&iacute;a de las personas. Sin embargo, no est&aacute; recomendado para personas con marcapasos o implantes electr&oacute;nicos, ni para mujeres embarazadas. Si tienes dudas, cons&uacute;ltalo con tu m&eacute;dico antes de agendar.</p></div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-question">&iquest;Cada cu&aacute;nto deber&iacute;a repetir el estudio? <span>+</span></div>
-        <div class="faq-answer"><p>Depende de tus objetivos. Si est&aacute;s en un programa de p&eacute;rdida de peso o entrenamiento, se recomienda cada 4 a 8 semanas para monitorear tu progreso. Como chequeo general, cada 3 a 6 meses es suficiente.</p></div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-question">&iquest;Qu&eacute; recibo despu&eacute;s del estudio? <span>+</span></div>
-        <div class="faq-answer"><p>Recibes una hoja impresa con tu reporte completo de composici&oacute;n corporal: masa muscular por segmento, porcentaje de grasa, agua corporal, grasa visceral, tasa metab&oacute;lica basal y m&aacute;s. Un especialista te explicar&aacute; cada dato.</p></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- TESTIMONIOS -->
-<!-- ═══════════════════════════════════════ -->
-<div class="section-wide">
-  <span class="section-label">Testimonios</span>
-  <h2>Lo que dicen nuestros pacientes</h2>
-  <div class="testimonials-grid">
-    <div class="testimonial-card">
-      <p class="testimonial-text">&ldquo;Llevaba meses en el gimnasio sin ver cambios en la b&aacute;scula. Con InBody descubr&iacute; que estaba ganando m&uacute;sculo y perdiendo grasa al mismo tiempo. Mi nutri&oacute;loga ajust&oacute; mi plan y en 3 meses logr&eacute; lo que no hab&iacute;a podido en un a&ntilde;o.&rdquo;</p>
-      <div class="testimonial-author">
-        <div class="testimonial-avatar">MR</div>
-        <div>
-          <div class="testimonial-name">Mar&iacute;a Rodr&iacute;guez</div>
-          <div class="testimonial-detail">34 a&ntilde;os</div>
-        </div>
-      </div>
-    </div>
-    <div class="testimonial-card">
-      <p class="testimonial-text">&ldquo;Pens&eacute; que solo ten&iacute;a que bajar de peso, pero el estudio mostr&oacute; que mi grasa visceral estaba en un nivel de riesgo. Eso me motiv&oacute; a tomarme en serio mi salud. Hoy, despu&eacute;s de 6 meses de seguimiento, mis indicadores est&aacute;n en rango normal.&rdquo;</p>
-      <div class="testimonial-author">
-        <div class="testimonial-avatar">JL</div>
-        <div>
-          <div class="testimonial-name">Jorge L&oacute;pez</div>
-          <div class="testimonial-detail">47 a&ntilde;os</div>
-        </div>
-      </div>
-    </div>
-    <div class="testimonial-card">
-      <p class="testimonial-text">&ldquo;Despu&eacute;s de mi cirug&iacute;a bari&aacute;trica necesitaba monitorear que no estuviera perdiendo m&uacute;sculo. InBody me dio esa tranquilidad. Ahora me lo hago cada 2 meses y mi doctora puede ajustar mi tratamiento con datos reales.&rdquo;</p>
-      <div class="testimonial-author">
-        <div class="testimonial-avatar">AC</div>
-        <div>
-          <div class="testimonial-name">Ana Castillo</div>
-          <div class="testimonial-detail">52 a&ntilde;os</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- CTA FINAL -->
-<!-- ═══════════════════════════════════════ -->
-<div class="cta-final">
-  <h2>Agenda tu estudio InBody</h2>
-  <p>El primer paso para conocer y transformar tu cuerpo con datos reales.</p>
-  <button class="cta-button" onclick="openForm()">Agendar ahora</button>
-</div>
-
-<div class="footer">
-  <span id="footer-consultorio"></span>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- FORM OVERLAY -->
-<!-- ═══════════════════════════════════════ -->
-<div class="form-overlay" id="formOverlay">
-  <div class="form-header">
-    <button class="back-btn" id="formBackBtn" onclick="formBack()">Volver</button>
-    <span style="font-size:14px;font-weight:500;color:var(--text-secondary)" id="form-step-counter">1 / 6</span>
-  </div>
-  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-
-  <div class="form-step active" id="step-1">
-    <span class="step-label">Paso 1 de 6</span>
-    <h2>Tu nombre completo</h2>
-    <p class="step-desc">Como aparece en tu identificaci&oacute;n oficial.</p>
-    <input class="form-input" id="input-nombre" type="text" placeholder="Nombre y apellidos" autocomplete="name">
-    <div class="input-error" id="error-nombre">Ingresa tu nombre completo.</div>
-    <button class="next-btn" onclick="nextStep(1)">Continuar</button>
-  </div>
-
-  <div class="form-step" id="step-2">
-    <span class="step-label">Paso 2 de 6</span>
-    <h2>Tel&eacute;fono de contacto</h2>
-    <p class="step-desc">A este n&uacute;mero te confirmaremos tu cita.</p>
-    <input class="form-input" id="input-telefono" type="tel" placeholder="10 d&iacute;gitos" maxlength="10" inputmode="numeric">
-    <span class="input-hint">Solo n&uacute;meros, sin espacios ni guiones.</span>
-    <div class="input-error" id="error-telefono">Ingresa un n&uacute;mero v&aacute;lido de 10 d&iacute;gitos.</div>
-    <button class="next-btn" onclick="nextStep(2)">Continuar</button>
-  </div>
-
-  <div class="form-step" id="step-3">
-    <span class="step-label">Paso 3 de 6</span>
-    <h2>Fecha de nacimiento</h2>
-    <p class="step-desc">Necesaria para calibrar las m&eacute;tricas del estudio.</p>
-    <input class="form-input" id="input-nacimiento" type="date" style="cursor:pointer">
-    <div class="input-error" id="error-nacimiento">Selecciona tu fecha de nacimiento.</div>
-    <button class="next-btn" onclick="nextStep(3)">Continuar</button>
-  </div>
-
-  <div class="form-step" id="step-4">
-    <span class="step-label">Paso 4 de 6</span>
-    <h2>G&eacute;nero de nacimiento</h2>
-    <p class="step-desc">El equipo InBody requiere este dato para calibrar el an&aacute;lisis.</p>
-    <div class="gender-options">
-      <div class="gender-card" data-value="Masculino" onclick="selectGender(this)">Masculino</div>
-      <div class="gender-card" data-value="Femenino" onclick="selectGender(this)">Femenino</div>
-    </div>
-    <input type="hidden" id="input-genero">
-    <div class="input-error" id="error-genero">Selecciona una opci&oacute;n.</div>
-    <button class="next-btn" onclick="nextStep(4)">Continuar</button>
-  </div>
-
-  <div class="form-step" id="step-5">
-    <span class="step-label">Paso 5 de 6</span>
-    <h2>Tu estatura</h2>
-    <p class="step-desc">En cent&iacute;metros. Por ejemplo: 170</p>
-    <input class="form-input" id="input-talla" type="number" placeholder="cm" min="100" max="250" inputmode="numeric">
-    <div class="input-error" id="error-talla">Ingresa una estatura v&aacute;lida en cent&iacute;metros.</div>
-    <button class="next-btn" onclick="nextStep(5)">Continuar</button>
-  </div>
-
-  <div class="form-step" id="step-6">
-    <span class="step-label">Paso 6 de 6</span>
-    <h2>Horario de preferencia</h2>
-    <p class="step-desc">Selecciona cu&aacute;ndo te gustar&iacute;a asistir.</p>
-    <div class="schedule-grid">
-      <div class="schedule-option" data-value="Lunes a viernes, ma&ntilde;ana" onclick="selectSchedule(this)">
-        Entre semana<span class="time-label">Ma&ntilde;ana (9&ndash;13h)</span>
-      </div>
-      <div class="schedule-option" data-value="Lunes a viernes, tarde" onclick="selectSchedule(this)">
-        Entre semana<span class="time-label">Tarde (14&ndash;18h)</span>
-      </div>
-      <div class="schedule-option" data-value="S&aacute;bado, ma&ntilde;ana" onclick="selectSchedule(this)">
-        S&aacute;bado<span class="time-label">Ma&ntilde;ana (9&ndash;13h)</span>
-      </div>
-      <div class="schedule-option" data-value="S&aacute;bado, tarde" onclick="selectSchedule(this)">
-        S&aacute;bado<span class="time-label">Tarde (14&ndash;17h)</span>
-      </div>
-    </div>
-    <input type="hidden" id="input-horario">
-    <div class="input-error" id="error-horario">Selecciona un horario.</div>
-    <button class="next-btn" onclick="nextStep(6)">Confirmar datos</button>
-  </div>
-
-  <div class="form-step confirmation" id="step-7">
-    <div class="check-circle">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
-    </div>
-    <h2>Datos registrados</h2>
-    <p class="step-desc">Revisa que todo est&eacute; correcto antes de enviar.</p>
-    <table class="summary-table">
-      <tr><td>Nombre</td><td id="sum-nombre"></td></tr>
-      <tr><td>Tel&eacute;fono</td><td id="sum-telefono"></td></tr>
-      <tr><td>Nacimiento</td><td id="sum-nacimiento"></td></tr>
-      <tr><td>G&eacute;nero</td><td id="sum-genero"></td></tr>
-      <tr><td>Estatura</td><td id="sum-talla"></td></tr>
-      <tr><td>Horario</td><td id="sum-horario"></td></tr>
-      <tr><td>Consultorio</td><td id="sum-consultorio"></td></tr>
-    </table>
-    <a class="whatsapp-btn" id="whatsappLink" href="#" target="_blank">Enviar por WhatsApp</a>
-    <p style="font-size:13px;color:var(--text-tertiary);margin-top:16px;">
-      Se abrir&aacute; WhatsApp con tus datos. Solo presiona enviar.
-    </p>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- ADMIN -->
-<!-- ═══════════════════════════════════════ -->
-<button class="admin-trigger" onclick="openAdmin()" title="Administraci&oacute;n">
-  <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-  </svg>
-</button>
-
-<div class="admin-overlay" id="adminOverlay">
-  <div class="admin-login" id="adminLogin">
-    <h2>Panel de administraci&oacute;n</h2>
-    <p>Ingresa la contrase&ntilde;a para continuar.</p>
-    <input class="admin-login-input" id="adminPass" type="password" placeholder="Contrase&ntilde;a">
-    <div class="admin-login-error" id="adminPassError">Contrase&ntilde;a incorrecta.</div>
-    <button class="admin-login-btn" onclick="adminLogin()">Entrar</button>
-    <button style="margin-top:16px;font-family:inherit;font-size:14px;color:var(--text-secondary);background:none;border:none;cursor:pointer" onclick="closeAdmin()">Cancelar</button>
-  </div>
-
-  <div class="admin-panel" id="adminPanel">
-    <div class="admin-panel-header">
-      <h1>Consultorios</h1>
-      <button class="admin-close" onclick="closeAdmin()">Cerrar</button>
-    </div>
-    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:24px;">
-      Configura cada consultorio. Los c&oacute;digos QR se generan autom&aacute;ticamente con la URL base actual. Para que funcionen, esta p&aacute;gina debe estar publicada en un hosting.
-    </p>
-    <div id="adminCards"></div>
-    <div class="admin-note">
-      <strong>Nota:</strong> Los QR apuntan a esta misma p&aacute;gina con el par&aacute;metro <code>?c=ID</code> que identifica cada consultorio. Cuando el paciente escanea, ve la landing personalizada con el nombre del consultorio y la doctora correspondiente. Al confirmar sus datos, el mensaje de WhatsApp se env&iacute;a al n&uacute;mero que configures aqu&iacute;.
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- JAVASCRIPT -->
-<!-- ═══════════════════════════════════════ -->
-<script>
-const DEFAULT_CONSULTORIOS = [
-  { id: "centro", nombre: "Consultorio Centro", doctora: "Dra. Mar\u00eda Garc\u00eda", whatsapp: "3312345678", direccion: "Av. Ju\u00e1rez 120, Col. Centro" },
-  { id: "providencia", nombre: "Consultorio Providencia", doctora: "Dra. Laura M\u00e9ndez", whatsapp: "3312345679", direccion: "Av. Providencia 2500" },
-  { id: "zapopan", nombre: "Consultorio Zapopan", doctora: "Dra. Ana Torres", whatsapp: "3312345680", direccion: "Av. Patria 1200, Zapopan" },
-  { id: "tlaquepaque", nombre: "Consultorio Tlaquepaque", doctora: "Dra. Sof\u00eda Ram\u00edrez", whatsapp: "3312345681", direccion: "Calle Independencia 45" },
-  { id: "chapalita", nombre: "Consultorio Chapalita", doctora: "Dra. Patricia L\u00f3pez", whatsapp: "3312345682", direccion: "Av. Guadalupe 350" },
-  { id: "vallarta", nombre: "Consultorio Vallarta", doctora: "Dra. Elena Navarro", whatsapp: "3312345683", direccion: "Av. Vallarta 3000" }
-];
-
-const ADMIN_PASSWORD = "inbody2024";
-
-let consultorios = JSON.parse(JSON.stringify(DEFAULT_CONSULTORIOS));
-let currentStep = 1;
-const totalSteps = 6;
-let currentConsultorio = null;
-
-function loadConfig() {
-  try { const s = localStorage.getItem('inbody_config'); if (s) consultorios = JSON.parse(s); } catch(e) {}
-}
-
-function saveConfig() {
-  try { localStorage.setItem('inbody_config', JSON.stringify(consultorios)); } catch(e) {}
-}
-
-function init() {
-  loadConfig();
-  const params = new URLSearchParams(window.location.search);
-  const cId = params.get('c');
-  currentConsultorio = cId ? consultorios.find(c => c.id === cId) : null;
-  if (!currentConsultorio) currentConsultorio = consultorios[0];
-
-  document.getElementById('badge-consultorio').textContent = currentConsultorio.nombre;
-  document.getElementById('footer-consultorio').textContent = currentConsultorio.nombre + ' \u2014 ' + currentConsultorio.doctora;
-
-  document.querySelectorAll('.form-input').forEach(input => {
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        const btn = input.closest('.form-step').querySelector('.next-btn');
-        if (btn) btn.click();
-      }
-    });
-  });
-}
-
-function openForm() {
-  document.getElementById('formOverlay').classList.add('active');
-  currentStep = 1;
-  showStep(1);
-  setTimeout(() => { const i = document.querySelector('#step-1 .form-input'); if (i) i.focus(); }, 100);
-}
-
-function closeForm() { document.getElementById('formOverlay').classList.remove('active'); }
-
-function showStep(n) {
-  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
-  const step = document.getElementById('step-' + n);
-  if (step) step.classList.add('active');
-  document.getElementById('progressFill').style.width = (n <= totalSteps ? ((n - 1) / totalSteps) * 100 : 100) + '%';
-  document.getElementById('form-step-counter').textContent = n <= totalSteps ? n + ' / ' + totalSteps : '';
-  document.getElementById('formBackBtn').textContent = n === 1 ? 'Cerrar' : 'Volver';
-}
-
-function formBack() { if (currentStep === 1) closeForm(); else { currentStep--; showStep(currentStep); } }
-
-function hideErrors() { document.querySelectorAll('.input-error').forEach(e => e.style.display = 'none'); }
-function showError(id) { document.getElementById(id).style.display = 'block'; }
-
-function nextStep(step) {
-  hideErrors();
-  if (step === 1 && document.getElementById('input-nombre').value.trim().length < 3) { showError('error-nombre'); return; }
-  if (step === 2 && !/^\d{10}$/.test(document.getElementById('input-telefono').value.trim())) { showError('error-telefono'); return; }
-  if (step === 3 && !document.getElementById('input-nacimiento').value) { showError('error-nacimiento'); return; }
-  if (step === 4 && !document.getElementById('input-genero').value) { showError('error-genero'); return; }
-  if (step === 5) { const v = parseInt(document.getElementById('input-talla').value); if (!v || v < 80 || v > 250) { showError('error-talla'); return; } }
-  if (step === 6) { if (!document.getElementById('input-horario').value) { showError('error-horario'); return; } buildSummary(); }
-  currentStep = step + 1;
-  showStep(currentStep);
-  setTimeout(() => { const i = document.querySelector('#step-' + currentStep + ' .form-input'); if (i) i.focus(); }, 100);
-}
-
-function selectGender(el) {
-  document.querySelectorAll('.gender-card').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('input-genero').value = el.dataset.value;
-}
-
-function selectSchedule(el) {
-  document.querySelectorAll('.schedule-option').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('input-horario').value = el.dataset.value;
-}
-
-function formatDate(d) { if (!d) return ''; const p = d.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
-
-function buildSummary() {
-  const nombre = document.getElementById('input-nombre').value.trim();
-  const telefono = document.getElementById('input-telefono').value.trim();
-  const nacimiento = document.getElementById('input-nacimiento').value;
-  const genero = document.getElementById('input-genero').value;
-  const talla = document.getElementById('input-talla').value;
-  const horario = document.getElementById('input-horario').value;
-
-  document.getElementById('sum-nombre').textContent = nombre;
-  document.getElementById('sum-telefono').textContent = telefono;
-  document.getElementById('sum-nacimiento').textContent = formatDate(nacimiento);
-  document.getElementById('sum-genero').textContent = genero;
-  document.getElementById('sum-talla').textContent = talla + ' cm';
-  document.getElementById('sum-horario').textContent = horario;
-  document.getElementById('sum-consultorio').textContent = currentConsultorio.nombre;
-
-  const msg = `Hola, me interesa agendar un estudio InBody.\n\nNombre: ${nombre}\nTel\u00e9fono: ${telefono}\nFecha de nacimiento: ${formatDate(nacimiento)}\nG\u00e9nero: ${genero}\nEstatura: ${talla} cm\nHorario preferido: ${horario}\nConsultorio de origen: ${currentConsultorio.nombre}\nDoctora: ${currentConsultorio.doctora}`;
-  document.getElementById('whatsappLink').href = `https://wa.me/52${currentConsultorio.whatsapp}?text=${encodeURIComponent(msg)}`;
-}
-
-function toggleFaq(el) { el.classList.toggle('open'); }
-
-function openAdmin() {
-  document.getElementById('adminOverlay').classList.add('active');
-  document.getElementById('adminPass').value = '';
-  document.getElementById('adminPassError').style.display = 'none';
-  document.getElementById('adminLogin').style.display = 'flex';
-  document.getElementById('adminPanel').classList.remove('active');
-  setTimeout(() => document.getElementById('adminPass').focus(), 100);
-}
-
-function closeAdmin() { document.getElementById('adminOverlay').classList.remove('active'); }
-
-function adminLogin() {
-  if (document.getElementById('adminPass').value === ADMIN_PASSWORD) {
-    document.getElementById('adminLogin').style.display = 'none';
-    document.getElementById('adminPanel').classList.add('active');
-    renderAdminCards();
-  } else {
-    document.getElementById('adminPassError').style.display = 'block';
-  }
-}
-
-document.getElementById('adminPass').addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
-
-function renderAdminCards() {
-  const container = document.getElementById('adminCards');
-  container.innerHTML = '';
-  consultorios.forEach((c, i) => {
-    const baseUrl = window.location.origin + window.location.pathname;
-    const url = baseUrl + '?c=' + c.id;
-    const card = document.createElement('div');
-    card.className = 'consultorio-card';
-    card.innerHTML = `
-      <div class="consultorio-card-header">
-        <div><h3>${c.nombre}</h3><p>${c.doctora}</p></div>
-        <button class="save-config-btn" onclick="saveConsultorio(${i})">Guardar</button>
-      </div>
-      <div class="consultorio-fields">
-        <div class="field-group"><label>Nombre del consultorio</label><input class="field-input" id="admin-nombre-${i}" value="${c.nombre}"></div>
-        <div class="field-group"><label>Doctora</label><input class="field-input" id="admin-doctora-${i}" value="${c.doctora}"></div>
-        <div class="field-group"><label>WhatsApp (10 d\u00edgitos)</label><input class="field-input" id="admin-wa-${i}" value="${c.whatsapp}" maxlength="10"></div>
-        <div class="field-group"><label>Direcci\u00f3n</label><input class="field-input" id="admin-dir-${i}" value="${c.direccion}"></div>
-        <div class="field-group"><label>ID (para la URL)</label><input class="field-input" id="admin-id-${i}" value="${c.id}" style="font-family:monospace"></div>
-      </div>
-      <div class="qr-section">
-        <div class="qr-box" id="qr-${i}"></div>
-        <div class="qr-actions">
-          <span class="qr-url">${url}</span>
-          <button class="download-qr-btn" onclick="downloadQR(${i}, '${c.id}')">Descargar QR</button>
-        </div>
-      </div>`;
-    container.appendChild(card);
-    setTimeout(() => {
-      const qr = document.getElementById('qr-' + i);
-      qr.innerHTML = '';
-      new QRCode(qr, { text: url, width: 108, height: 108, colorDark: "#1a1a1a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
-    }, 50);
-  });
-}
-
-function saveConsultorio(i) {
-  consultorios[i].nombre = document.getElementById('admin-nombre-' + i).value;
-  consultorios[i].doctora = document.getElementById('admin-doctora-' + i).value;
-  consultorios[i].whatsapp = document.getElementById('admin-wa-' + i).value;
-  consultorios[i].direccion = document.getElementById('admin-dir-' + i).value;
-  consultorios[i].id = document.getElementById('admin-id-' + i).value;
-  saveConfig();
-  renderAdminCards();
-}
-
-function downloadQR(index, id) {
-  const canvas = document.getElementById('qr-' + index).querySelector('canvas');
-  if (canvas) { const a = document.createElement('a'); a.download = 'qr-' + id + '.png'; a.href = canvas.toDataURL('image/png'); a.click(); }
-}
-
-init();
-</script>
+ 
+    <script>
+        // ============================================
+        // CONFIGURATION & STATE
+        // ============================================
+ 
+        const CONFIG = {
+            password: 'inbody2024',
+            colors: {
+                primary: '#1A6B5A',
+                gray: '#F5F5F5',
+            },
+            consultorios: [
+                { id: 'centro', nombre: 'Consultorio Centro', doctor: 'Dra. María García', whatsapp: '3312345678', direccion: 'Av. Juárez 120 Col. Centro' },
+                { id: 'providencia', nombre: 'Consultorio Providencia', doctor: 'Dr. Roberto Sánchez', whatsapp: '3387654321', direccion: 'Av. Providencia 456' },
+                { id: 'zapopan', nombre: 'Consultorio Zapopan', doctor: 'Dra. Laura Martínez', whatsapp: '3398765432', direccion: 'Blvd. Puerta de Hierro 789' },
+                { id: 'tlaquepaque', nombre: 'Consultorio Tlaquepaque', doctor: 'Dr. Carlos López', whatsapp: '3376543210', direccion: 'Av. Niños Héroes 234' },
+                { id: 'chapalita', nombre: 'Consultorio Chapalita', doctor: 'Dra. Ana Rodríguez', whatsapp: '3365432109', direccion: 'Av. Guadalupe 567' },
+                { id: 'vallarta', nombre: 'Consultorio Vallarta', doctor: 'Dr. Miguel Torres', whatsapp: '3354321098', direccion: 'Av. Vallarta 890' },
+            ],
+            messages: {
+                welcome: '¡Hola! Bienvenido al análisis InBody. Seleccione una opción para continuar.',
+                infoMenu: '¿Qué desea saber sobre el estudio InBody?',
+                errorName: 'Por favor, ingrese su nombre completo (nombre y apellido).',
+                errorPhone: 'Por favor, ingrese un teléfono válido (10 dígitos).',
+                errorBirthdate: 'Por favor, ingrese una fecha válida (formato: dd/mm/aaaa).',
+                errorGender: 'Por favor, seleccione un género válido.',
+                errorHeight: 'Por favor, ingrese una talla válida (entre 100 y 220 cm).',
+                askName: '¿Cuál es su nombre completo?',
+                askPhone: '¿Cuál es su número de teléfono?',
+                askBirthdate: '¿Cuál es su fecha de nacimiento? (formato: dd/mm/aaaa)',
+                askGender: '¿Cuál es su género de nacimiento?',
+                askHeight: '¿Cuál es su talla en centímetros?',
+                confirmData: 'Verifique que todos sus datos sean correctos:',
+                editField: '¿Cuál campo desea modificar?',
+                success: '¡Perfecto! Abriremos WhatsApp para agendar su cita.',
+            },
+            infoContent: {
+                what: {
+                    title: '¿Qué es InBody?',
+                    text: 'El análisis InBody es un estudio de composición corporal que mide con precisión su grasa corporal, masa muscular, contenido mineral óseo y análisis de segmentación corporal. Es una evaluación no invasiva que toma solo 45 segundos y proporciona resultados detallados en tiempo real.',
+                },
+                duration: {
+                    title: '¿Cuánto tiempo dura?',
+                    text: 'El análisis InBody completo toma aproximadamente 45 segundos. El proceso es simple: solo debe pararse en la plataforma del equipo y sostenerse en los electrodos. La toma del análisis toma menos de 1 minuto.',
+                },
+                preparation: {
+                    title: 'Preparación necesaria',
+                    text: 'Recomendamos ayunar 2-3 horas antes del análisis para obtener resultados más precisos. Evite ejercicio intenso 24 horas antes. No es necesario hacer preparativos especiales; simplemente venga con ropa cómoda.',
+                },
+                contraindications: {
+                    title: 'Contraindicaciones',
+                    text: 'No se recomienda el análisis en personas con marcapasos, implantes metálicos activos, o durante el embarazo. Si tiene alguna condición médica especial, consulte con nuestro personal antes del análisis.',
+                },
+                price: {
+                    title: 'Precio del análisis',
+                    text: 'El costo del análisis InBody es de $250 MXN. Este incluye el estudio completo y un reporte detallado de composición corporal. Consulte con su consultorio sobre promociones especiales.',
+                },
+                results: {
+                    title: 'Entrega de resultados',
+                    text: 'Recibe los resultados inmediatamente después del análisis en forma de un reporte detallado con gráficos. Además, le proporcionaremos una copia digital que puede llevar a su nutriólogo o entrenador personal.',
+                },
+            },
+        };
+ 
+        // STATE
+        let state = {
+            screen: 'welcome', // welcome, chat, info
+            chatState: 'welcome', // FSM state
+            consultorioId: null,
+            formData: {
+                nombre: '',
+                telefono: '',
+                fechaNacimiento: '',
+                genero: '',
+                talla: '',
+            },
+            adminLoggedIn: false,
+            typingActive: false,
+        };
+ 
+        // ============================================
+        // DATA PARSING / VALIDATION
+        // ============================================
+ 
+        function parsePhone(input) {
+            const digits = input.replace(/\D/g, '');
+            if (digits.length === 10 && /^\d{10}$/.test(digits)) {
+                return digits;
+            }
+            return null;
+        }
+ 
+        function parseName(input) {
+            const trimmed = input.trim();
+            const words = trimmed.split(/\s+/).filter(w => w.length > 0);
+            if (words.length >= 2) {
+                return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+            }
+            return null;
+        }
+ 
+        function parseBirthdate(input) {
+            const cleaned = input.trim();
+ 
+            // Try dd/mm/yyyy or dd-mm-yyyy
+            let match = cleaned.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
+            if (match) {
+                const [_, day, month, year] = match;
+                const d = parseInt(day);
+                const m = parseInt(month);
+                const y = parseInt(year);
+                if (d >= 1 && d <= 31 && m >= 1 && m <= 12 && y >= 1900 && y <= 2100) {
+                    const date = new Date(y, m - 1, d);
+                    if (date.getDate() === d) {
+                        const age = new Date().getFullYear() - y;
+                        if (age >= 10 && age <= 100) {
+                            return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
+                        }
+                    }
+                }
+            }
+ 
+            return null;
+        }
+ 
+        function parseHeight(input) {
+            const cleaned = input.toLowerCase().replace(/\s*cm?\s*$/, '').trim();
+            const num = parseFloat(cleaned.replace(',', '.'));
+ 
+            if (!isNaN(num)) {
+                let height = num;
+                if (num < 3) {
+                    height = num * 100;
+                }
+                if (height >= 100 && height <= 220) {
+                    return Math.round(height);
+                }
+            }
+ 
+            return null;
+        }
+ 
+        function parseGender(input) {
+            const normalized = input.toLowerCase().trim();
+            const masc = ['masculino', 'hombre', 'm', 'h', 'masc'];
+            const fem = ['femenino', 'mujer', 'f', 'fem'];
+ 
+            if (masc.includes(normalized)) return 'Masculino';
+            if (fem.includes(normalized)) return 'Femenino';
+ 
+            return null;
+        }
+ 
+        // ============================================
+        // DOM UTILITIES
+        // ============================================
+ 
+        function getParam(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+ 
+        function addMessage(text, isUser = false, isError = false, isSuccess = false) {
+            const wrapper = document.getElementById('messagesWrapper');
+            const msg = document.createElement('div');
+            msg.className = `message ${isUser ? 'user' : 'system'}`;
+ 
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            if (isError) bubble.classList.add('error');
+            if (isSuccess) bubble.classList.add('success');
+ 
+            bubble.textContent = text;
+            msg.appendChild(bubble);
+            wrapper.appendChild(msg);
+ 
+            wrapper.scrollTop = wrapper.scrollHeight;
+        }
+ 
+        function addInfoBubble(title, content) {
+            const wrapper = document.getElementById('messagesWrapper');
+            const msg = document.createElement('div');
+            msg.className = 'message system';
+ 
+            const section = document.createElement('div');
+            section.className = 'info-section';
+            section.innerHTML = `<h3>${title}</h3><p>${content}</p>`;
+ 
+            msg.appendChild(section);
+            wrapper.appendChild(msg);
+ 
+            wrapper.scrollTop = wrapper.scrollHeight;
+        }
+ 
+        function showTyping() {
+            state.typingActive = true;
+            const wrapper = document.getElementById('messagesWrapper');
+            const msg = document.createElement('div');
+            msg.className = 'message system';
+            msg.id = 'typingIndicator';
+ 
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'typing-dot';
+                indicator.appendChild(dot);
+            }
+ 
+            msg.appendChild(indicator);
+            wrapper.appendChild(msg);
+            wrapper.scrollTop = wrapper.scrollHeight;
+        }
+ 
+        function removeTyping() {
+            state.typingActive = false;
+            const el = document.getElementById('typingIndicator');
+            if (el) el.remove();
+        }
+ 
+        function clearInput() {
+            document.getElementById('userInput').value = '';
+        }
+ 
+        function showQuickReplies(buttons) {
+            const wrapper = document.getElementById('messagesWrapper');
+            const msg = document.createElement('div');
+            msg.className = 'message system';
+ 
+            const group = document.createElement('div');
+            group.className = 'button-group';
+            group.style.marginTop = '8px';
+ 
+            buttons.forEach(btn => {
+                const b = document.createElement('button');
+                b.className = 'btn btn-secondary btn-small';
+                b.textContent = btn.label;
+                b.onclick = () => {
+                    addMessage(btn.label, true);
+                    handleUserInput(btn.value || btn.label);
+                    wrapper.querySelectorAll('.button-group').forEach(g => g.remove());
+                };
+                group.appendChild(b);
+            });
+ 
+            msg.appendChild(group);
+            wrapper.appendChild(msg);
+            wrapper.scrollTop = wrapper.scrollHeight;
+        }
+ 
+        function showConfirmation() {
+            const wrapper = document.getElementById('messagesWrapper');
+            const msg = document.createElement('div');
+            msg.className = 'message system';
+ 
+            const panel = document.createElement('div');
+            panel.className = 'confirmation-panel';
+            panel.innerHTML = `
+                <h3>${CONFIG.messages.confirmData}</h3>
+                <div class="confirmation-row">
+                    <span class="confirmation-label">Nombre:</span>
+                    <span class="confirmation-value">${state.formData.nombre}</span>
+                </div>
+                <div class="confirmation-row">
+                    <span class="confirmation-label">Teléfono:</span>
+                    <span class="confirmation-value">${state.formData.telefono}</span>
+                </div>
+                <div class="confirmation-row">
+                    <span class="confirmation-label">Fecha de nacimiento:</span>
+                    <span class="confirmation-value">${state.formData.fechaNacimiento}</span>
+                </div>
+                <div class="confirmation-row">
+                    <span class="confirmation-label">Género:</span>
+                    <span class="confirmation-value">${state.formData.genero}</span>
+                </div>
+                <div class="confirmation-row">
+                    <span class="confirmation-label">Talla:</span>
+                    <span class="confirmation-value">${state.formData.talla} cm</span>
+                </div>
+                <div class="button-group" style="margin-top: 16px;">
+                    <button class="btn btn-primary" onclick="handleConfirmYes()">Sí, correcto</button>
+                    <button class="btn btn-secondary" onclick="handleConfirmEdit()">Editar datos</button>
+                </div>
+            `;
+ 
+            msg.appendChild(panel);
+            wrapper.appendChild(msg);
+            wrapper.scrollTop = wrapper.scrollHeight;
+        }
+ 
+        function handleConfirmYes() {
+            addMessage('Sí, correcto', true);
+            state.chatState = 'send_whatsapp';
+            setTimeout(() => sendToWhatsApp(), 800);
+        }
+ 
+        function handleConfirmEdit() {
+            addMessage('Editar datos', true);
+            addMessage(CONFIG.messages.editField);
+            showQuickReplies([
+                { label: 'Nombre', value: 'edit_nombre' },
+                { label: 'Teléfono', value: 'edit_telefono' },
+                { label: 'Fecha de nacimiento', value: 'edit_fechaNacimiento' },
+                { label: 'Género', value: 'edit_genero' },
+                { label: 'Talla', value: 'edit_talla' },
+            ]);
+        }
+ 
+        // ============================================
+        // ANALYTICS
+        // ============================================
+ 
+        function trackInteraction() {
+            const key = `inbody_interactions_${state.consultorioId}`;
+            const current = parseInt(localStorage.getItem(key) || '0');
+            localStorage.setItem(key, current + 1);
+ 
+            const totalKey = 'inbody_interactions_total';
+            const total = parseInt(localStorage.getItem(totalKey) || '0');
+            localStorage.setItem(totalKey, total + 1);
+        }
+ 
+        function trackCompletion() {
+            const key = `inbody_completed_${state.consultorioId}`;
+            const current = parseInt(localStorage.getItem(key) || '0');
+            localStorage.setItem(key, current + 1);
+ 
+            const totalKey = 'inbody_completed_total';
+            const total = parseInt(localStorage.getItem(totalKey) || '0');
+            localStorage.setItem(totalKey, total + 1);
+        }
+ 
+        // ============================================
+        // CHAT FLOW
+        // ============================================
+ 
+        function handleUserInput(input) {
+            const trimmed = input.trim();
+            trackInteraction();
+ 
+            if (state.chatState === 'welcome') {
+                if (trimmed.toLowerCase().includes('sí') || trimmed.toLowerCase().includes('agendar')) {
+                    state.chatState = 'ask_name';
+                    addMessage('Perfecto, comenzaremos con el registro.');
+                    setTimeout(() => {
+                        removeTyping();
+                        addMessage(CONFIG.messages.askName);
+                    }, 800);
+                } else if (trimmed.toLowerCase().includes('información') || trimmed.toLowerCase().includes('saber')) {
+                    state.chatState = 'info_menu';
+                    addMessage(CONFIG.messages.infoMenu);
+                    showQuickReplies([
+                        { label: '¿Qué es InBody?', value: 'info_what' },
+                        { label: '¿Cuánto tiempo dura?', value: 'info_duration' },
+                        { label: 'Preparación', value: 'info_preparation' },
+                        { label: 'Contraindicaciones', value: 'info_contraindications' },
+                        { label: 'Precio', value: 'info_price' },
+                        { label: 'Entrega de resultados', value: 'info_results' },
+                        { label: 'Quiero agendar', value: 'want_schedule' },
+                    ]);
+                } else {
+                    addMessage(CONFIG.messages.welcome);
+                    showQuickReplies([
+                        { label: 'Sí, agendar estudio', value: 'schedule' },
+                        { label: 'Ver información', value: 'info' },
+                    ]);
+                }
+                return;
+            }
+ 
+            if (state.chatState === 'info_menu') {
+                const lower = trimmed.toLowerCase();
+                if (lower.includes('qué') || lower.includes('what')) {
+                    addInfoBubble(CONFIG.infoContent.what.title, CONFIG.infoContent.what.text);
+                } else if (lower.includes('tiempo') || lower.includes('dura')) {
+                    addInfoBubble(CONFIG.infoContent.duration.title, CONFIG.infoContent.duration.text);
+                } else if (lower.includes('preparación') || lower.includes('preparaci')) {
+                    addInfoBubble(CONFIG.infoContent.preparation.title, CONFIG.infoContent.preparation.text);
+                } else if (lower.includes('contraindicación') || lower.includes('contraindc')) {
+                    addInfoBubble(CONFIG.infoContent.contraindications.title, CONFIG.infoContent.contraindications.text);
+                } else if (lower.includes('precio') || lower.includes('costo') || lower.includes('cuesta')) {
+                    addInfoBubble(CONFIG.infoContent.price.title, CONFIG.infoContent.price.text);
+                } else if (lower.includes('resultado') || lower.includes('entrega')) {
+                    addInfoBubble(CONFIG.infoContent.results.title, CONFIG.infoContent.results.text);
+                } else if (lower.includes('agendar') || lower.includes('quiero')) {
+                    state.chatState = 'ask_name';
+                    addMessage('Excelente, procedaremos con el registro para agendar su cita.');
+                    setTimeout(() => {
+                        removeTyping();
+                        addMessage(CONFIG.messages.askName);
+                    }, 800);
+                    return;
+                }
+ 
+                setTimeout(() => {
+                    showTyping();
+                    setTimeout(() => {
+                        removeTyping();
+                        addMessage('¿Desea saber algo más o prefiere agendar su cita?');
+                        showQuickReplies([
+                            { label: 'Saber más', value: 'more_info' },
+                            { label: 'Agendar ahora', value: 'schedule_now' },
+                        ]);
+                    }, 800);
+                }, 500);
+                return;
+            }
+ 
+            // NAME
+            if (state.chatState === 'ask_name') {
+                const parsed = parseName(trimmed);
+                if (parsed) {
+                    addMessage(trimmed, true);
+                    state.formData.nombre = parsed;
+                    state.chatState = 'ask_phone';
+                    showTyping();
+                    setTimeout(() => {
+                        removeTyping();
+                        addMessage(CONFIG.messages.askPhone);
+                    }, 800);
+                } else {
+                    addMessage(trimmed, true);
+                    addMessage(CONFIG.messages.errorName, false, true);
+                }
+                return;
+            }
+ 
+            // PHONE
+            if (state.chatState === 'ask_phone') {
+                const parsed = parsePhone(trimmed);
+                if (parsed) {
+                    addMessage(trimmed, true);
+                    state.formData.telefono = parsed;
+                    state.chatState = 'ask_birthdate';
+                    showTyping();
+                    setTimeout(() => {
+                        removeTyping();
+                        addMessage(CONFIG.messages.askBirthdate);
+                    }, 800);
+                } else {
+                    addMessage(trimmed, true);
+                    addMessage(CONFIG.messages.errorPhone, false, true);
+                }
+                return;
+            }
+ 
+            // BIRTHDATE
+            if (state.chatState === 'ask_birthdate') {
+                const parsed = parseBirthdate(trimmed);
+                if (parsed) {
+                    addMessage(trimmed, true);
+                    state.formData.fechaNacimiento = parsed;
+                    state.chatState = 'ask_gender';
+                    showTyping();
+                    setTimeout(() => {
+                        removeTyping();
+                        addMessage(CONFIG.messages.askGender);
+                        showQuickReplies([
+                            { label: 'Masculino', value: 'male' },
+                            { label: 'Femenino', value: 'female' },
+                        ]);
+                    }, 800);
+                } else {
+                    addMessage(trimmed, true);
+                    addMessage(CONFIG.messages.errorBirthdate, false, true);
+                }
+                return;
+            }
+ 
+            // GENDER
+            if (state.chatState === 'ask_gender') {
+                const parsed = parseGender(trimmed);
+                if (parsed) {
+                    addMessage(parsed, true);
+                    state.formData.genero = parsed;
+                    state.chatState = 'ask_height';
+                    showTyping();
+                    setTimeout(() => {
+                        removeTyping();
+                        addMessage(CONFIG.messages.askHeight);
+                    }, 800);
+                } else {
+                    addMessage(trimmed, true);
+                    addMessage(CONFIG.messages.errorGender, false, true);
+                }
+                return;
+            }
+ 
+            // HEIGHT
+            if (state.chatState === 'ask_height') {
+                const parsed = parseHeight(trimmed);
+                if (parsed) {
+                    addMessage(trimmed, true);
+                    state.formData.talla = parsed;
+                    state.chatState = 'confirm';
+                    showTyping();
+                    setTimeout(() => {
+                        removeTyping();
+                        showConfirmation();
+                    }, 800);
+                } else {
+                    addMessage(trimmed, true);
+                    addMessage(CONFIG.messages.errorHeight, false, true);
+                }
+                return;
+            }
+ 
+            // EDIT FIELDS
+            if (state.chatState === 'confirm' && state.formData.nombre) {
+                if (trimmed.toLowerCase().includes('nombre')) {
+                    addMessage(trimmed, true);
+                    state.chatState = 'ask_name';
+                    addMessage(CONFIG.messages.askName);
+                } else if (trimmed.toLowerCase().includes('teléfono')) {
+                    addMessage(trimmed, true);
+                    state.chatState = 'ask_phone';
+                    addMessage(CONFIG.messages.askPhone);
+                } else if (trimmed.toLowerCase().includes('fecha')) {
+                    addMessage(trimmed, true);
+                    state.chatState = 'ask_birthdate';
+                    addMessage(CONFIG.messages.askBirthdate);
+                } else if (trimmed.toLowerCase().includes('género')) {
+                    addMessage(trimmed, true);
+                    state.chatState = 'ask_gender';
+                    addMessage(CONFIG.messages.askGender);
+                    showQuickReplies([
+                        { label: 'Masculino', value: 'male' },
+                        { label: 'Femenino', value: 'female' },
+                    ]);
+                } else if (trimmed.toLowerCase().includes('talla')) {
+                    addMessage(trimmed, true);
+                    state.chatState = 'ask_height';
+                    addMessage(CONFIG.messages.askHeight);
+                }
+            }
+        }
+ 
+        function sendToWhatsApp() {
+            const consultorio = CONFIG.consultorios.find(c => c.id === state.consultorioId);
+ 
+            let message = `Nueva cita InBody\n\n`;
+            message += `Nombre: ${state.formData.nombre}\n`;
+            message += `Teléfono: ${state.formData.telefono}\n`;
+            message += `Fecha de nacimiento: ${state.formData.fechaNacimiento}\n`;
+            message += `Género: ${state.formData.genero}\n`;
+            message += `Talla: ${state.formData.talla} cm\n`;
+            if (consultorio) {
+                message += `Consultorio de origen: ${consultorio.nombre}`;
+            }
+ 
+            const encoded = encodeURIComponent(message);
+            const whatsappNumber = consultorio ? consultorio.whatsapp : '523312345678';
+            const url = `https://wa.me/${whatsappNumber}?text=${encoded}`;
+ 
+            addMessage(CONFIG.messages.success, false, false, true);
+            trackCompletion();
+            state.chatState = 'done';
+ 
+            setTimeout(() => {
+                window.open(url, '_blank');
+            }, 1000);
+        }
+ 
+        // ============================================
+        // ADMIN PANEL
+        // ============================================
+ 
+        function loadConsultorios() {
+            const stored = localStorage.getItem('inbody_consultorios');
+            if (stored) {
+                CONFIG.consultorios = JSON.parse(stored);
+            }
+            renderConsultorios();
+            updateQrSelect();
+        }
+ 
+        function renderConsultorios() {
+            const list = document.getElementById('consultoriosList');
+            list.innerHTML = '';
+ 
+            CONFIG.consultorios.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'consultorio-item';
+                item.innerHTML = `
+                    <div class="consultorio-info">
+                        <div class="name">${c.nombre}</div>
+                        <div class="meta">${c.doctor} • ${c.whatsapp} • ${c.direccion}</div>
+                    </div>
+                    <div class="consultorio-actions">
+                        <button class="btn btn-secondary btn-icon" onclick="deleteConsultorio('${c.id}')">Eliminar</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+ 
+        function addConsultorioHandler() {
+            const id = document.getElementById('consultorioId').value.trim();
+            const nombre = document.getElementById('consultorioName').value.trim();
+            const doctor = document.getElementById('consultorioDoctor').value.trim();
+            const whatsapp = document.getElementById('consultorioWhatsapp').value.trim();
+            const direccion = document.getElementById('consultorioAddress').value.trim();
+ 
+            if (!id || !nombre || !doctor || !whatsapp || !direccion) {
+                alert('Complete todos los campos');
+                return;
+            }
+ 
+            const exists = CONFIG.consultorios.findIndex(c => c.id === id);
+            if (exists >= 0) {
+                CONFIG.consultorios[exists] = { id, nombre, doctor, whatsapp, direccion };
+            } else {
+                CONFIG.consultorios.push({ id, nombre, doctor, whatsapp, direccion });
+            }
+ 
+            localStorage.setItem('inbody_consultorios', JSON.stringify(CONFIG.consultorios));
+            renderConsultorios();
+            updateQrSelect();
+ 
+            document.getElementById('consultorioId').value = '';
+            document.getElementById('consultorioName').value = '';
+            document.getElementById('consultorioDoctor').value = '';
+            document.getElementById('consultorioWhatsapp').value = '';
+            document.getElementById('consultorioAddress').value = '';
+        }
+ 
+        function deleteConsultorio(id) {
+            if (confirm('¿Eliminar este consultorio?')) {
+                CONFIG.consultorios = CONFIG.consultorios.filter(c => c.id !== id);
+                localStorage.setItem('inbody_consultorios', JSON.stringify(CONFIG.consultorios));
+                renderConsultorios();
+                updateQrSelect();
+            }
+        }
+ 
+        function updateQrSelect() {
+            const select = document.getElementById('qrConsultorio');
+            select.innerHTML = '<option value="">-- Seleccionar --</option>';
+            CONFIG.consultorios.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.nombre;
+                select.appendChild(opt);
+            });
+        }
+ 
+        function generateQrHandler() {
+            const consultorioId = document.getElementById('qrConsultorio').value;
+            if (!consultorioId) {
+                alert('Seleccione un consultorio');
+                return;
+            }
+ 
+            const baseUrl = window.location.origin + window.location.pathname;
+            const qrUrl = `${baseUrl}?c=${consultorioId}`;
+ 
+            const output = document.getElementById('qrOutput');
+            output.innerHTML = '';
+ 
+            const container = document.createElement('div');
+            container.style.marginTop = '16px';
+ 
+            const label = document.createElement('div');
+            label.className = 'qr-label';
+            label.textContent = `QR para: ${CONFIG.consultorios.find(c => c.id === consultorioId).nombre}`;
+ 
+            const qrDiv = document.createElement('div');
+            qrDiv.className = 'qr-container';
+            qrDiv.id = 'qrCanvas';
+ 
+            container.appendChild(label);
+            container.appendChild(qrDiv);
+ 
+            const printBtn = document.createElement('button');
+            printBtn.className = 'btn btn-primary';
+            printBtn.textContent = 'Imprimir QR';
+            printBtn.style.marginTop = '12px';
+            printBtn.onclick = () => {
+                const printWindow = window.open('', 'QR_PRINT');
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>QR InBody</title>
+                        <style>
+                            body { text-align: center; padding: 20px; }
+                            h2 { color: #1A6B5A; }
+                            #qrCode { display: inline-block; margin: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>${CONFIG.consultorios.find(c => c.id === consultorioId).nombre}</h2>
+                        <div id="qrCode"></div>
+                        <p style="margin-top: 20px; font-size: 12px;">URL: ${qrUrl}</p>
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+                setTimeout(() => {
+                    new QRCode(printWindow.document.getElementById('qrCode'), qrUrl);
+                    printWindow.print();
+                }, 500);
+            };
+ 
+            container.appendChild(printBtn);
+            output.appendChild(container);
+ 
+            // Generate QR
+            setTimeout(() => {
+                new QRCode(document.getElementById('qrCanvas'), qrUrl);
+            }, 100);
+        }
+ 
+        function updateStats() {
+            const total = parseInt(localStorage.getItem('inbody_interactions_total') || '0');
+            const completed = parseInt(localStorage.getItem('inbody_completed_total') || '0');
+            document.getElementById('statsTotal').textContent = total;
+            document.getElementById('statsCompleted').textContent = completed;
+        }
+ 
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+ 
+        document.getElementById('sendButton').addEventListener('click', () => {
+            const input = document.getElementById('userInput').value;
+            if (input.trim()) {
+                clearInput();
+                handleUserInput(input);
+            }
+        });
+ 
+        document.getElementById('userInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('sendButton').click();
+            }
+        });
+ 
+        let adminTapCount = 0;
+        let adminTapTimer = null;
+ 
+        document.getElementById('adminTrigger').addEventListener('click', () => {
+            adminTapCount++;
+            clearTimeout(adminTapTimer);
+ 
+            if (adminTapCount === 1) {
+                adminTapTimer = setTimeout(() => {
+                    adminTapCount = 0;
+                    document.getElementById('adminModal').classList.add('visible');
+                    document.getElementById('adminPassword').classList.remove('hidden');
+                    document.getElementById('adminContent').classList.add('hidden');
+                    document.getElementById('adminPasswordInput').value = '';
+                    document.getElementById('adminPasswordInput').focus();
+                }, 300);
+            }
+        });
+ 
+        document.getElementById('adminClose').addEventListener('click', () => {
+            document.getElementById('adminModal').classList.remove('visible');
+            state.adminLoggedIn = false;
+        });
+ 
+        document.getElementById('adminLogin').addEventListener('click', () => {
+            const pwd = document.getElementById('adminPasswordInput').value;
+            if (pwd === CONFIG.password) {
+                state.adminLoggedIn = true;
+                document.getElementById('adminPassword').classList.add('hidden');
+                document.getElementById('adminContent').classList.remove('hidden');
+                loadConsultorios();
+                updateStats();
+            } else {
+                alert('Contraseña incorrecta');
+            }
+        });
+ 
+        document.getElementById('adminLogout').addEventListener('click', () => {
+            state.adminLoggedIn = false;
+            document.getElementById('adminModal').classList.remove('visible');
+        });
+ 
+        document.getElementById('addConsultorio').addEventListener('click', addConsultorioHandler);
+        document.getElementById('generateQr').addEventListener('click', generateQrHandler);
+ 
+        document.getElementById('welcomeYes').addEventListener('click', () => {
+            document.getElementById('welcomeModal').classList.add('hidden');
+            state.chatState = 'ask_name';
+            addMessage('Perfecto, comenzaremos con el registro.');
+            setTimeout(() => {
+                addMessage(CONFIG.messages.askName);
+            }, 800);
+        });
+ 
+        document.getElementById('welcomeInfo').addEventListener('click', () => {
+            document.getElementById('welcomeModal').classList.add('hidden');
+            state.chatState = 'info_menu';
+            addMessage(CONFIG.messages.infoMenu);
+            showQuickReplies([
+                { label: '¿Qué es InBody?', value: 'info_what' },
+                { label: '¿Cuánto tiempo dura?', value: 'info_duration' },
+                { label: 'Preparación', value: 'info_preparation' },
+                { label: 'Contraindicaciones', value: 'info_contraindications' },
+                { label: 'Precio', value: 'info_price' },
+                { label: 'Entrega de resultados', value: 'info_results' },
+                { label: 'Quiero agendar', value: 'want_schedule' },
+            ]);
+        });
+ 
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+ 
+        window.addEventListener('load', () => {
+            state.consultorioId = getParam('c') || 'centro';
+ 
+            // Initial message
+            setTimeout(() => {
+                addMessage(CONFIG.messages.welcome);
+                showQuickReplies([
+                    { label: 'Sí, agendar estudio', value: 'schedule' },
+                    { label: 'Ver información', value: 'info' },
+                ]);
+            }, 500);
+        });
+    </script>
 </body>
 </html>
+ 
