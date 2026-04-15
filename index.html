@@ -1189,16 +1189,21 @@
         function initSupabase() {
             try {
                 const sb = window.supabase || window.Supabase;
-                if (sb && sb.createClient) {
-                    supabase = sb.createClient(SUPABASE_URL, SUPABASE_KEY);
-                    console.log('Supabase inicializado correctamente');
-                    return true;
-                } else {
+                if (!sb || !sb.createClient) {
                     console.log('Librería Supabase no disponible aún');
                     return false;
                 }
+                // Use hardcoded key, or override from localStorage if user saved a different one
+                const customUrl = localStorage.getItem('inbody_supabase_url');
+                const customKey = localStorage.getItem('inbody_supabase_key');
+                const finalUrl = (customUrl && customUrl.length > 10) ? customUrl : SUPABASE_URL;
+                const finalKey = (customKey && customKey.length > 10) ? customKey : SUPABASE_KEY;
+
+                supabase = sb.createClient(finalUrl, finalKey);
+                console.log('Supabase inicializado correctamente con key tipo:', finalKey.substring(0, 6) + '...');
+                return true;
             } catch (e) {
-                console.log('Supabase no disponible, usando localStorage:', e.message);
+                console.log('Supabase createClient error:', e.message);
                 supabase = null;
                 return false;
             }
@@ -2037,11 +2042,20 @@
             }, 500);
 
             // Load Supabase library in background (non-blocking)
+            // Try latest version first (supports sb_publishable_ keys), fallback to v2
             loadExternalScript(
-                'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+                'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js',
                 function(ok) {
                     if (ok) {
                         try { initSupabase(); } catch(e) { console.log('Supabase init error:', e.message); }
+                    } else {
+                        // Fallback to v2
+                        loadExternalScript(
+                            'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+                            function(ok2) {
+                                if (ok2) { try { initSupabase(); } catch(e) { console.log('Supabase v2 init error:', e.message); } }
+                            }
+                        );
                     }
                 }
             );
